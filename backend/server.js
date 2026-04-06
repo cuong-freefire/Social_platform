@@ -12,8 +12,21 @@ import cookieParser from 'cookie-parser';
 const app = express();
 
 //Kết nối tới port angular bằng Cors
+const allowedOrigins = [
+    `http://localhost:${process.env.PORT_F}`,
+    'https://social-platform-tc34.onrender.com' // Domain Frontend chính xác của bạn
+];
+
 const corsOptions = {
-    origin: `http://localhost:${process.env.PORT_F}`,
+    origin: function (origin, callback) {
+        // Cho phép các request không có origin (như mobile apps hoặc curl)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
     optionsSuccessStatus: 204

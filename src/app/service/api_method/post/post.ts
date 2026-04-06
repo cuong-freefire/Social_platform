@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Post } from '../../../interface/post';
 import { Comment } from '../../../interface/comment';
 import { map, catchError, throwError } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -10,9 +11,10 @@ import { map, catchError, throwError } from 'rxjs';
 export class PostApi {
 
   private http = inject(HttpClient);
+  private apiUrl = environment.apiUrl;
 
   getAllPost(page: string, limit: string, userId?: string) {
-    let url = `http://localhost:3000/post/all?page=${page}&limit=${limit}`;
+    let url = `${this.apiUrl}/post/all?page=${page}&limit=${limit}`;
     if (userId) url += `&userId=${userId}`;
     return this.http.get<Post[]>(url).pipe(
       catchError(err => {
@@ -24,7 +26,7 @@ export class PostApi {
   }
 
   getPostById(id: string) {
-    return this.http.get<Post>(`http://localhost:3000/post/${id}`).pipe(
+    return this.http.get<Post>(`${this.apiUrl}/post/${id}`).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra"
         return throwError(() => new Error(message))
@@ -33,7 +35,7 @@ export class PostApi {
   }
 
   getCommentById(id: string, page: string, limit: string) {
-    return this.http.get<Comment[]>(`http://localhost:3000/post/comment/${id}?page=${page}&limit=${limit}`).pipe(
+    return this.http.get<Comment[]>(`${this.apiUrl}/post/comment/${id}?page=${page}&limit=${limit}`).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra"
         return throwError(() => new Error(message))
@@ -43,7 +45,7 @@ export class PostApi {
   }
 
   createPost(data: FormData) {
-    return this.http.post<{ post: Post, message: string }>('http://localhost:3000/post/create', data).pipe(
+    return this.http.post<{ post: Post, message: string }>(`${this.apiUrl}/post/create`, data).pipe(
       map(res => res.post),
       catchError(err => {
         const message = err?.error.detail || err?.error.error || "Có lỗi xảy ra";

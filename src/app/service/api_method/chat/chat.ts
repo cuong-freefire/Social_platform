@@ -3,15 +3,17 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { Conversation } from '../../../interface/conversation';
 import { Message } from '../../../interface/message';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatApi {
   private http = inject(HttpClient);
+  private apiUrl = environment.apiUrl;
 
   getAllConversation() {
-    return this.http.get<Conversation[]>(`http://localhost:3000/chat/conversation/all`).pipe(
+    return this.http.get<Conversation[]>(`${this.apiUrl}/chat/conversation/all`).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra"
         return throwError(() => new Error(message))
@@ -20,7 +22,7 @@ export class ChatApi {
   }
 
   getOrCreateConversation(receiverId: string) {
-    return this.http.post<Conversation>(`http://localhost:3000/chat/conversation/get-or-create`, { receiverId }).pipe(
+    return this.http.post<Conversation>(`${this.apiUrl}/chat/conversation/get-or-create`, { receiverId }).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra"
         return throwError(() => new Error(message))
@@ -29,7 +31,7 @@ export class ChatApi {
   }
 
   getMessageByConversation(conversationId: string) {
-    return this.http.get<Message[]>(`http://localhost:3000/chat/message/all/${conversationId}`).pipe(
+    return this.http.get<Message[]>(`${this.apiUrl}/chat/message/all/${conversationId}`).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra"
         return throwError(() => new Error(message))
@@ -38,7 +40,7 @@ export class ChatApi {
   }
 
   sendMessage(formData: FormData) {
-    return this.http.post<Message>(`http://localhost:3000/chat/message/send_message`, formData).pipe(
+    return this.http.post<Message>(`${this.apiUrl}/chat/message/send_message`, formData).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra"
         return throwError(() => new Error(message))
@@ -47,7 +49,7 @@ export class ChatApi {
   }
 
   createGroup(groupName: string, participants: string[]) {
-    return this.http.post<Conversation>(`http://localhost:3000/chat/conversation/create-group`, { groupName, participants }).pipe(
+    return this.http.post<Conversation>(`${this.apiUrl}/chat/conversation/create-group`, { groupName, participants }).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra"
         return throwError(() => new Error(message))
@@ -56,7 +58,7 @@ export class ChatApi {
   }
 
   editMessage(messageId: string, content: string) {
-    return this.http.patch<Message>(`http://localhost:3000/chat/message/edit`, { messageId, content }).pipe(
+    return this.http.patch<Message>(`${this.apiUrl}/chat/message/edit`, { messageId, content }).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra"
         return throwError(() => new Error(message))
@@ -65,7 +67,7 @@ export class ChatApi {
   }
 
   deleteMessage(messageId: string) {
-    return this.http.delete<{ messageId: string, isDeleted: boolean, content: string }>(`http://localhost:3000/chat/message/delete/${messageId}`).pipe(
+    return this.http.delete<{ messageId: string, isDeleted: boolean, content: string }>(`${this.apiUrl}/chat/message/delete/${messageId}`).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra"
         return throwError(() => new Error(message))
@@ -74,7 +76,7 @@ export class ChatApi {
   }
 
   renameGroup(conversationId: string, newGroupName: string) {
-    return this.http.patch<Conversation>(`http://localhost:3000/chat/conversation/rename-group`, { conversationId, newGroupName }).pipe(
+    return this.http.patch<Conversation>(`${this.apiUrl}/chat/conversation/rename-group`, { conversationId, newGroupName }).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra"
         return throwError(() => new Error(message))

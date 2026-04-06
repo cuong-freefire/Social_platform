@@ -3,16 +3,18 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, throwError, map } from 'rxjs';
 import { User } from '../../../interface/user';
 import { UpdateUserResponse } from '../../../interface/update-user-response';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserApi {
   private http = inject(HttpClient);
+  private apiUrl = environment.apiUrl;
 
   //Lấy thông tin người dùng
   getUserInfor() {
-    return this.http.get<{ userObject: User }>('http://localhost:3000/user/me').pipe(
+    return this.http.get<{ userObject: User }>(`${this.apiUrl}/user/me`).pipe(
       map(res => res.userObject),
       catchError(err => {
         const message = err.error?.error || 'Có lỗi xảy ra';
@@ -22,7 +24,7 @@ export class UserApi {
   }
 
   getUserInforById(id: string) {
-    return this.http.get<{ userObject: User }>(`http://localhost:3000/user/${id}`).pipe(
+    return this.http.get<{ userObject: User }>(`${this.apiUrl}/user/${id}`).pipe(
       map(res => res.userObject),
       catchError(err => {
         const message = err.error?.error || 'Có lỗi xảy ra';
@@ -32,7 +34,7 @@ export class UserApi {
   }
 
   updateUserInfor(data: FormData) {
-    return this.http.patch<UpdateUserResponse>('http://localhost:3000/user/update', data).pipe(
+    return this.http.patch<UpdateUserResponse>(`${this.apiUrl}/user/update`, data).pipe(
       catchError(err => {
         const message = err?.error.error || 'Có lỗi xảy ra';
         return throwError(() => new Error(message));
@@ -41,7 +43,7 @@ export class UserApi {
   }
 
   unFriend(id: string) {
-    return this.http.delete<User>(`http://localhost:3000/user/unfriend/${id}`).pipe(
+    return this.http.delete<User>(`${this.apiUrl}/user/unfriend/${id}`).pipe(
       catchError(err => {
         const message = err?.error.error || 'Có lỗi xảy ra';
         return throwError(() => new Error(message));
