@@ -55,7 +55,7 @@ export class PostApi {
   }
 
   likePost(postId: string, action: string) {
-    return this.http.post<Post>(`http://localhost:3000/post/like/${postId}`, { action: action }).pipe(
+    return this.http.post<Post>(`${this.apiUrl}/post/like/${postId}`, { action: action }).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra";
         return throwError(() => new Error(message))
@@ -64,7 +64,7 @@ export class PostApi {
   }
 
   createComment(postId: string, content: string, parentCommentId?: string) {
-    return this.http.post<Comment>(`http://localhost:3000/post/comment/${postId}`, { content, parentCommentId }).pipe(
+    return this.http.post<Comment>(`${this.apiUrl}/post/comment/${postId}`, { content, parentCommentId }).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra";
         return throwError(() => new Error(message))
@@ -73,7 +73,7 @@ export class PostApi {
   }
 
   deleteComment(commentId: string) {
-    return this.http.delete<string>(`http://localhost:3000/post/comment/${commentId}`).pipe(
+    return this.http.delete<string>(`${this.apiUrl}/post/comment/${commentId}`).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra";
         return throwError(() => new Error(message))

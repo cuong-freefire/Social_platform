@@ -9,8 +9,7 @@ import { NotFound } from './component/error/not-found/not-found';
 import { FriendDetail } from './component/pages/friend-detail/friend-detail';
 import { PostDetail } from './component/pages/post-detail/post-detail';
 import { ChatPage } from './component/pages/chat-page/chat-box';
-import { AboutPage } from './component/pages/about-page/about-page';
-
+import { About } from './component/pages/about/about';
 export const routes: Routes = [
     {
         path: '',
@@ -19,15 +18,15 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
-        path: 'about',
-        component: AboutPage,
-        title: 'About GAY',
-        canActivate: [authGuard]
-    },
-    {
         path: 'chat',
         component: ChatPage,
         title: 'Messenger',
+        canActivate: [authGuard]
+    },
+    {
+        path: 'about',
+        component: About,
+        title: 'About web',
         canActivate: [authGuard]
     },
     {

@@ -2,15 +2,18 @@
     @if (selectedConversation) {
         <!-- Header -->
         <div class="chat-header p-3 border-bottom-1 surface-border bg-surface-900 flex align-items-center justify-content-between sticky top-0 z-2">
-            <div class="flex align-items-center gap-3">
-                <p-avatar [image]="selectedConversation.isGroup ? 'https://primefaces.org/cdn/primeng/images/demo/avatar/ionitcu.png' : (otherParticipant?.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png')" shape="circle" size="large"></p-avatar>
+            <div class="flex align-items-center gap-3 cursor-pointer" (click)="openGroupInfo()">
+                <p-avatar [image]="conversationImage" shape="circle" size="large"></p-avatar>
                 <div class="flex flex-column">
                     <span class="font-bold text-lg text-white">{{ conversationName }}</span>
                     <span class="text-xs text-green-500">{{ selectedConversation.isGroup ? (selectedConversation.participants.length + ' thành viên') : 'Đang hoạt động' }}</span>
                 </div>
             </div>
             @if (selectedConversation.isGroup) {
-                <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-sm" pTooltip="Đổi tên nhóm" (click)="openRenameDialog()"></button>
+                <div class="flex gap-2">
+                    <button pButton icon="pi pi-info-circle" class="p-button-rounded p-button-text p-button-sm text-white" pTooltip="Thông tin nhóm" (click)="openGroupInfo()"></button>
+                    <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-sm text-white" pTooltip="Đổi tên nhóm" (click)="openRenameDialog()"></button>
+                </div>
             }
         </div>
 
@@ -18,79 +21,87 @@
         <div class="messages-area flex-grow-1 p-3 overflow-y-auto custom-scrollbar" #scrollMe>
             <div class="flex flex-column gap-4">
                 @for (msg of messages; track msg._id) {
-                    <div class="message-group flex flex-column" [class.align-items-end]="msg.user._id === currentUserId">
-                        
-                        <!-- Date/Time separator if needed (Optional, but showing time for every msg now) -->
-                        <div class="message-time text-xs text-gray-600 mb-1 px-2">
-                            {{ (msg.createdAt | date:'HH:mm dd/MM') ?? '' }}
+                    @if (msg.isSystem) {
+                        <div class="system-message w-full flex justify-content-center my-2">
+                            <span class="bg-surface-800 text-gray-400 text-xs px-3 py-1 border-round-2xl italic">
+                                {{ msg.content }}
+                            </span>
                         </div>
+                    } @else {
+                        <div class="message-group flex flex-column" [class.align-items-end]="msg.user._id === currentUserId">
+                            
+                            <!-- Date/Time separator if needed (Optional, but showing time for every msg now) -->
+                            <div class="message-time text-xs text-gray-600 mb-1 px-2">
+                                {{ (msg.createdAt | date:'HH:mm dd/MM') ?? '' }}
+                            </div>
 
-                        <div class="flex align-items-start gap-2 message-row" [class.flex-row-reverse]="msg.user._id === currentUserId">
-                            <!-- Avatar -->
-                            <p-avatar 
-                                [image]="msg.user.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" 
-                                shape="circle" 
-                                size="normal"
-                                class="flex-shrink-0"
-                            ></p-avatar>
+                            <div class="flex align-items-start gap-2 message-row" [class.flex-row-reverse]="msg.user._id === currentUserId">
+                                <!-- Avatar -->
+                                <p-avatar 
+                                    [image]="msg.user.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" 
+                                    shape="circle" 
+                                    size="normal"
+                                    class="flex-shrink-0"
+                                ></p-avatar>
 
-                            <div class="flex flex-column bubble-container" [class.align-items-end]="msg.user._id === currentUserId">
-                                <!-- User Name (only for others or group) -->
-                                @if (msg.user._id !== currentUserId || selectedConversation.isGroup) {
-                                    <span class="text-xs text-gray-500 font-medium mb-1 ml-1">{{ msg.user.name }}</span>
-                                }
+                                <div class="flex flex-column bubble-container" [class.align-items-end]="msg.user._id === currentUserId">
+                                    <!-- User Name (only for others or group) -->
+                                    @if (msg.user._id !== currentUserId || selectedConversation.isGroup) {
+                                        <span class="text-xs text-gray-500 font-medium mb-1 ml-1">{{ msg.user.name }}</span>
+                                    }
 
-                                <!-- Reply Context -->
-                                @if (msg.parentMessage) {
-                                    <div class="reply-context p-2 mb-1 border-round-lg bg-surface-800 text-xs text-gray-400">
-                                        <i class="pi pi-reply mr-1"></i>
-                                        <span class="italic">{{ msg.parentMessage.content | slice:0:50 }}</span>
-                                    </div>
-                                }
-
-                                <div class="message-bubble-wrapper flex align-items-center gap-2" [class.flex-row-reverse]="msg.user._id === currentUserId">
-                                    <div class="message-bubble p-3 border-round-2xl" 
-                                         [class.my-message]="msg.user._id === currentUserId && !msg.isDeleted"
-                                         [class.other-message]="msg.user._id !== currentUserId && !msg.isDeleted"
-                                         [class.deleted-msg]="msg.isDeleted"
-                                    >
-                                        @if (msg.imageUrl && !msg.isDeleted) {
-                                            <div class="message-image mb-2">
-                                                <img [src]="msg.imageUrl" alt="Sent image" class="border-round-lg w-full cursor-pointer" style="max-width: 300px; max-height: 400px; object-fit: cover;" (click)="openImage(msg.imageUrl)">
-                                            </div>
-                                        }
-                                        <div class="message-text text-white">{{ msg.content }}</div>
-                                        @if (msg.isEdited && !msg.isDeleted) { 
-                                            <div class="text-xs opacity-60 mt-1 italic text-right">(đã sửa)</div> 
-                                        }
-                                    </div>
-
-                                    <!-- Message Actions -->
-                                    @if (!msg.isDeleted) {
-                                        <div class="message-actions flex gap-1 opacity-0">
-                                            <button pButton icon="pi pi-reply" 
-                                                class="p-button-rounded p-button-text p-button-sm action-icon-btn" 
-                                                (click)="onReply.emit(msg)"
-                                                pTooltip="Trả lời"
-                                            ></button>
-                                            @if (msg.user._id === currentUserId) {
-                                                <button pButton icon="pi pi-pencil" 
-                                                    class="p-button-rounded p-button-text p-button-sm action-icon-btn" 
-                                                    (click)="onEdit.emit(msg)"
-                                                    pTooltip="Chỉnh sửa"
-                                                ></button>
-                                                <button pButton icon="pi pi-trash" 
-                                                    class="p-button-rounded p-button-text p-button-sm p-button-danger action-icon-btn" 
-                                                    (click)="onDelete.emit(msg._id)"
-                                                    pTooltip="Thu hồi"
-                                                ></button>
-                                            }
+                                    <!-- Reply Context -->
+                                    @if (msg.parentMessage) {
+                                        <div class="reply-context p-2 mb-1 border-round-lg bg-surface-800 text-xs text-gray-400">
+                                            <i class="pi pi-reply mr-1"></i>
+                                            <span class="italic">{{ msg.parentMessage.content | slice:0:50 }}</span>
                                         </div>
                                     }
+
+                                    <div class="message-bubble-wrapper flex align-items-center gap-2" [class.flex-row-reverse]="msg.user._id === currentUserId">
+                                        <div class="message-bubble p-3 border-round-2xl" 
+                                             [class.my-message]="msg.user._id === currentUserId && !msg.isDeleted"
+                                             [class.other-message]="msg.user._id !== currentUserId && !msg.isDeleted"
+                                             [class.deleted-msg]="msg.isDeleted"
+                                        >
+                                            @if (msg.imageUrl && !msg.isDeleted) {
+                                                <div class="message-image mb-2">
+                                                    <img [src]="msg.imageUrl" alt="Sent image" class="border-round-lg w-full cursor-pointer" style="max-width: 300px; max-height: 400px; object-fit: cover;" (click)="openImage(msg.imageUrl)">
+                                                </div>
+                                            }
+                                            <div class="message-text text-white">{{ msg.content }}</div>
+                                            @if (msg.isEdited && !msg.isDeleted) { 
+                                                <div class="text-xs opacity-60 mt-1 italic text-right">(đã sửa)</div> 
+                                            }
+                                        </div>
+
+                                        <!-- Message Actions -->
+                                        @if (!msg.isDeleted) {
+                                            <div class="message-actions flex gap-1 opacity-0">
+                                                <button pButton icon="pi pi-reply" 
+                                                    class="p-button-rounded p-button-text p-button-sm action-icon-btn" 
+                                                    (click)="onReply.emit(msg)"
+                                                    pTooltip="Trả lời"
+                                                ></button>
+                                                @if (msg.user._id === currentUserId) {
+                                                    <button pButton icon="pi pi-pencil" 
+                                                        class="p-button-rounded p-button-text p-button-sm action-icon-btn" 
+                                                        (click)="onEdit.emit(msg)"
+                                                        pTooltip="Chỉnh sửa"
+                                                    ></button>
+                                                    <button pButton icon="pi pi-trash" 
+                                                        class="p-button-rounded p-button-text p-button-sm p-button-danger action-icon-btn" 
+                                                        (click)="onDelete.emit(msg._id)"
+                                                        pTooltip="Thu hồi"
+                                                    ></button>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 }
             </div>
         </div>
@@ -153,5 +164,97 @@
         <button pButton label="Hủy" class="p-button-text p-button-secondary" (click)="displayRenameDialog = false"></button>
         <button pButton label="Cập nhật" icon="pi pi-check" class="p-button-primary p-button-rounded px-4" 
             [disabled]="!newGroupName.trim() || newGroupName === selectedConversation?.groupName" (click)="submitRename()"></button>
+    </ng-template>
+</p-dialog>
+
+<!-- Confirmation Dialog -->
+<p-dialog [header]="confirmTitle" [(visible)]="displayConfirmDialog" [modal]="true" [style]="{width: '400px'}" styleClass="bg-surface-900 text-white">
+    <div class="flex flex-column gap-3 py-3">
+        <p class="m-0 text-gray-300">{{ confirmMessage }}</p>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton label="Hủy" class="p-button-text p-button-secondary" (click)="closeConfirmDialog()"></button>
+        <button pButton [label]="confirmAction === 'dissolve' ? 'Giải tán' : 'Xóa'" 
+            [icon]="confirmAction === 'dissolve' ? 'pi pi-trash' : 'pi pi-user-minus'" 
+            class="p-button-rounded px-4" 
+            [class.p-button-danger]="true"
+            (click)="confirmExecution()"></button>
+    </ng-template>
+</p-dialog>
+
+<!-- Group Info Dialog -->
+<p-dialog header="Thông tin nhóm" [(visible)]="displayGroupInfoDialog" [modal]="true" [style]="{width: '450px'}" styleClass="bg-surface-900 text-white">
+    <div class="flex flex-column align-items-center gap-3 py-4">
+        <div class="relative group">
+            <p-avatar [image]="conversationImage" shape="circle" size="xlarge" styleClass="shadow-4 border-2 border-primary-500"></p-avatar>
+            @if (isCreator) {
+                <button pButton icon="pi pi-camera" class="p-button-rounded p-button-primary absolute bottom-0 right-0 w-8 h-8 flex align-items-center justify-content-center shadow-2" (click)="triggerGroupImageInput()" pTooltip="Đổi ảnh nhóm"></button>
+                <input type="file" #groupImageInput class="hidden" accept="image/*" (change)="onGroupImageSelected($event)">
+            }
+        </div>
+        <div class="text-center">
+            <h3 class="text-2xl font-bold m-0 text-white">{{ conversationName }}</h3>
+            <span class="text-sm text-gray-500">Được tạo bởi {{ creatorName }}</span>
+        </div>
+
+        <div class="w-full mt-4">
+            <div class="flex justify-content-between align-items-center mb-2 px-1">
+                <span class="font-bold text-lg text-white">Thành viên ({{ selectedConversation?.participants?.length }})</span>
+                <button pButton icon="pi pi-user-plus" class="p-button-rounded p-button-text p-button-sm text-primary-500" pTooltip="Thêm thành viên" (click)="openAddMemberDialog()"></button>
+            </div>
+            <div class="members-list overflow-y-auto max-h-20rem flex flex-column gap-2 bg-surface-800 p-2 border-round-xl">
+                @for (member of selectedConversation?.participants; track member._id) {
+                    <div class="member-item flex align-items-center justify-content-between p-2 hover:bg-surface-700 border-round-lg transition-all cursor-pointer" (click)="viewUserDetail(member._id)">
+                        <div class="flex align-items-center gap-3">
+                            <p-avatar [image]="member.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" shape="circle"></p-avatar>
+                            <div class="flex flex-column">
+                                <span class="text-white font-medium">{{ member.name }}</span>
+                                @if (member._id === creatorId) {
+                                    <span class="text-xs text-primary-500">Trưởng nhóm</span>
+                                }
+                            </div>
+                        </div>
+                        @if (isCreator && member._id !== currentUserId) {
+                            <button pButton icon="pi pi-user-minus" class="p-button-rounded p-button-danger p-button-text" pTooltip="Xóa khỏi nhóm" (click)="$event.stopPropagation(); kickMember(member._id)"></button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (isCreator) {
+            <div class="w-full mt-4 pt-3 border-top-1 surface-border">
+                <button pButton label="Giải tán nhóm" icon="pi pi-trash" class="p-button-danger p-button-outlined w-full p-button-rounded" (click)="dissolveGroup()"></button>
+            </div>
+        }
+    </div>
+</p-dialog>
+
+<!-- Add Member Dialog -->
+<p-dialog header="Thêm thành viên" [(visible)]="displayAddMemberDialog" [modal]="true" [style]="{width: '400px'}" styleClass="bg-surface-900 text-white">
+    <div class="flex flex-column gap-3 py-3">
+        <label class="font-bold text-sm">Chọn bạn bè</label>
+        <p-multiSelect 
+            [options]="availableFriends" 
+            [(ngModel)]="selectedFriends" 
+            optionLabel="name" 
+            placeholder="Chọn người..." 
+            class="w-full bg-surface-800 border-none text-white"
+            styleClass="w-full bg-surface-800 border-none"
+            panelStyleClass="bg-surface-800 text-white"
+            appendTo="body"
+        >
+            <ng-template let-friend pTemplate="item">
+                <div class="flex align-items-center gap-2">
+                    <p-avatar [image]="friend.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" shape="circle" size="normal"></p-avatar>
+                    <span>{{ friend.name }}</span>
+                </div>
+            </ng-template>
+        </p-multiSelect>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton label="Hủy" class="p-button-text p-button-secondary" (click)="displayAddMemberDialog = false"></button>
+        <button pButton label="Thêm" icon="pi pi-check" class="p-button-primary p-button-rounded px-4" 
+            [disabled]="!selectedFriends.length" (click)="submitAddMembers()"></button>
     </ng-template>
 </p-dialog>

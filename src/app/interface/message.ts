@@ -10,6 +10,7 @@ export interface Message {
     isRead: boolean;
     isDeleted: boolean;
     isEdited: boolean;
+    isSystem?: boolean;
     createdAt: string;
     updatedAt: string;
 }

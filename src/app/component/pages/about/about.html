@@ -1,0 +1,174 @@
+<div class="about-container bg-surface-950 min-h-screen">
+    <app-navbar></app-navbar>
+    
+    <div class="content-wrapper p-4 md:p-8 max-w-6xl mx-auto">
+        <!-- Hero Section -->
+        <div class="hero-section text-center mb-8 py-16 border-round-3xl shadow-8 overflow-hidden relative">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                <i class="pi pi-comments text-8xl absolute" style="top: 10%; left: 10%"></i>
+                <i class="pi pi-heart text-8xl absolute" style="bottom: 15%; right: 10%"></i>
+                <i class="pi pi-bolt text-8xl absolute" style="top: 20%; right: 20%"></i>
+            </div>
+            
+            <h1 class="text-7xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 hero-title">
+                GAY
+            </h1>
+            <p class="text-2xl text-gray-300 font-medium italic mb-8 px-4">
+                "Hành trình kết nối, lan tỏa yêu thương trong kỷ nguyên số"
+            </p>
+            <div class="flex justify-content-center gap-3 hero-actions">
+                <button pButton label="Khám phá ngay" icon="pi pi-compass" class="p-button-rounded p-button-lg px-6 shadow-4 glow-btn" (click)="showGAY = !showGAY; showContact = false"></button>
+                <button pButton label="Liên hệ" icon="pi pi-envelope" class="p-button-rounded p-button-outlined p-button-lg px-6 text-white" (click)="showContact = !showContact; showGAY = false"></button>
+            </div>
+
+            <!-- Animated GAY Message -->
+            @if (showGAY) {
+                <div class="gay-message-container mt-8 flex justify-content-center gap-4 px-4">
+                    <div class="bg-surface-800 p-4 border-round-xl shadow-4 border-top-3 border-primary-500 w-full max-w-15rem">
+                        <span class="text-4xl font-bold text-primary-400 block mb-2">G</span>
+                        <span class="text-sm text-gray-300">Gắn kết mọi trái tim qua từng nhịp chat.</span>
+                    </div>
+                    <div class="bg-surface-800 p-4 border-round-xl shadow-4 border-top-3 border-primary-500 w-full max-w-15rem">
+                        <span class="text-4xl font-bold text-primary-400 block mb-2">A</span>
+                        <span class="text-sm text-gray-300">An tâm chia sẻ, bảo mật tuyệt đối.</span>
+                    </div>
+                    <div class="bg-surface-800 p-4 border-round-xl shadow-4 border-top-3 border-primary-500 w-full max-w-15rem">
+                        <span class="text-4xl font-bold text-primary-400 block mb-2">Y</span>
+                        <span class="text-sm text-gray-300">Yêu thương lan tỏa trong từng thông điệp.</span>
+                    </div>
+                </div>
+            }
+
+            <!-- Animated Contact Info -->
+            @if (showContact) {
+                <div class="contact-reveal mt-8 inline-flex align-items-center gap-3 bg-primary-500 text-white p-4 border-round-3xl shadow-8">
+                    <i class="pi pi-phone text-2xl"></i>
+                    <div class="flex flex-column align-items-start">
+                        <span class="text-xs uppercase font-bold opacity-80">Hotline hỗ trợ</span>
+                        <span class="text-2xl font-bold">0967551345</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Intro Section -->
+        <div class="grid mb-8">
+            <div class="col-12 lg:col-7">
+                <div class="intro-section h-full p-6 border-round-2xl bg-surface-900 shadow-4 border-left-3 border-primary-500">
+                    <h2 class="text-4xl font-bold text-white mb-6 flex align-items-center gap-3">
+                        <i class="pi pi-sparkles text-primary-500"></i>
+                        Sứ mệnh của chúng tôi
+                    </h2>
+                    <p class="text-gray-300 line-height-4 text-xl mb-6">
+                        Chào mừng bạn đến với **GAY** - không gian trò chuyện hiện đại, nơi mỗi tin nhắn gửi đi là một nhịp cầu nối liền khoảng cách. 
+                        Chúng tôi không chỉ xây dựng một ứng dụng chat, chúng tôi kiến tạo một cộng đồng văn minh, nơi sự chân thành và thấu hiểu được đặt lên hàng đầu.
+                    </p>
+                    <div class="creator-info p-5 border-round-2xl shadow-2 flex flex-column md:flex-row align-items-center justify-content-between gap-4">
+                        <div class="flex align-items-center gap-4">
+                            <div class="w-16 h-16 border-round-circle bg-primary-500 flex align-items-center justify-content-center shadow-4">
+                                <i class="pi pi-user text-3xl text-white"></i>
+                            </div>
+                            <div>
+                                <div class="text-primary-400 font-bold text-sm uppercase tracking-widest mb-1">Founder & CEO</div>
+                                <div class="text-2xl font-bold text-white">Lê Hùng Cường</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <button pButton icon="pi pi-phone" class="p-button-rounded p-button-text text-primary-400 p-button-lg" pTooltip="0967551345"></button>
+                            <button pButton icon="pi pi-facebook" class="p-button-rounded p-button-text text-primary-400 p-button-lg"></button>
+                            <button pButton icon="pi pi-github" class="p-button-rounded p-button-text text-primary-400 p-button-lg"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 lg:col-5">
+                <div class="stats-grid grid h-full">
+                    @for (stat of stats; track stat.label) {
+                        <div class="col-6">
+                            <div class="stat-item p-4 border-round-2xl bg-surface-900 shadow-4 h-full flex flex-column align-items-center justify-content-center border-1 border-white-alpha-10">
+                                <span class="text-4xl font-bold text-primary-400 mb-2">{{ stat.value }}</span>
+                                <span class="text-gray-500 font-medium uppercase text-xs tracking-wider">{{ stat.label }}</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Values Section -->
+        <div class="grid gap-4 mb-8">
+            <!-- G - Generosity -->
+            <div class="col-12 md:col-4">
+                <div class="card p-6 border-round-3xl bg-surface-900 h-full shadow-4 flex flex-column align-items-center relative overflow-hidden">
+                    <div class="absolute -top-4 -right-4 w-24 h-24 bg-primary-500 opacity-5 border-round-circle"></div>
+                    <div class="letter-circle w-20 h-20 border-round-circle bg-primary-900 flex align-items-center justify-content-center mb-6 shadow-8">
+                        <span class="text-5xl font-bold text-primary-400">G</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white text-center mb-4">Gắn kết</h3>
+                    <p class="text-gray-400 text-center line-height-4 text-lg">
+                        Xây dựng những mối quan hệ bền chặt thông qua sự sẻ chia và lòng rộng lượng.
+                    </p>
+                </div>
+            </div>
+
+            <!-- A - Authenticity -->
+            <div class="col-12 md:col-4">
+                <div class="card p-6 border-round-3xl bg-surface-900 h-full shadow-4 flex flex-column align-items-center relative overflow-hidden">
+                    <div class="absolute -top-4 -right-4 w-24 h-24 bg-primary-500 opacity-5 border-round-circle"></div>
+                    <div class="letter-circle w-20 h-20 border-round-circle bg-primary-900 flex align-items-center justify-content-center mb-6 shadow-8">
+                        <span class="text-5xl font-bold text-primary-400">A</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white text-center mb-4">An tâm</h3>
+                    <p class="text-gray-400 text-center line-height-4 text-lg">
+                        Môi trường an toàn tuyệt đối, nơi bạn tự tin thể hiện bản sắc cá nhân chân thực nhất.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Y - Youthfulness -->
+            <div class="col-12 md:col-4">
+                <div class="card p-6 border-round-3xl bg-surface-900 h-full shadow-4 flex flex-column align-items-center relative overflow-hidden">
+                    <div class="absolute -top-4 -right-4 w-24 h-24 bg-primary-500 opacity-5 border-round-circle"></div>
+                    <div class="letter-circle w-20 h-20 border-round-circle bg-primary-900 flex align-items-center justify-content-center mb-6 shadow-8">
+                        <span class="text-5xl font-bold text-primary-400">Y</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white text-center mb-4">Yêu thương</h3>
+                    <p class="text-gray-400 text-center line-height-4 text-lg">
+                        Lan tỏa năng lượng tích cực và sự ấm áp trong từng thông điệp được gửi đi.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="features-section py-8">
+            <h2 class="text-4xl font-bold text-white text-center mb-8">Tại sao chọn chúng tôi?</h2>
+            <div class="grid">
+                @for (feature of features; track feature.title) {
+                    <div class="col-12 sm:col-6 lg:col-3">
+                        <div class="p-4 text-center">
+                            <i [class]="feature.icon + ' feature-icon mb-4'"></i>
+                            <h4 class="text-xl font-bold text-white mb-2">{{ feature.title }}</h4>
+                            <p class="text-gray-500 line-height-3">{{ feature.desc }}</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-quote text-center mt-8 py-12 border-top-1 border-white-alpha-10">
+            <p class="text-2xl italic text-gray-400 mb-4 px-4">
+                "Chúng ta không chỉ nhắn tin, chúng ta đang xây dựng những nhịp cầu của niềm tin và hy vọng."
+            </p>
+            <div class="flex justify-content-center gap-4 mt-8 opacity-50">
+                <i class="pi pi-twitter text-xl cursor-pointer hover:text-primary-500 transition-colors"></i>
+                <i class="pi pi-instagram text-xl cursor-pointer hover:text-primary-500 transition-colors"></i>
+                <i class="pi pi-linkedin text-xl cursor-pointer hover:text-primary-500 transition-colors"></i>
+            </div>
+            <div class="mt-6 text-sm text-gray-600 font-medium uppercase tracking-widest">
+                © 2026 GAY Chat App. All rights reserved.
+            </div>
+        </div>
+    </div>
+</div>

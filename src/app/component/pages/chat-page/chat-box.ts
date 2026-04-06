@@ -97,13 +97,7 @@ export class ChatPage implements OnInit, OnDestroy {
     }
 
     this.selectedConversation = conv;
-    this.chatApi.getMessageByConversation(conv._id).subscribe({
-      next: (res) => {
-        this.messages = [...res]; // Tạo reference mới để Angular phát hiện thay đổi
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Lỗi tải tin nhắn:', err)
-    });
+    this.loadMessages(conv._id);
   }
 
   startOrOpenConversation(receiverId: string) {
@@ -188,6 +182,69 @@ export class ChatPage implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Lỗi đổi tên nhóm:', err)
+    });
+  }
+
+  updateGroupImage(file: File) {
+    if (!this.selectedConversation) return;
+    this.chatApi.updateGroupImage(this.selectedConversation._id, file).subscribe({
+      next: (updatedConv) => {
+        this.selectedConversation = updatedConv;
+        this.conversationState.addOrUpdateConversation(updatedConv);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Lỗi cập nhật ảnh nhóm:', err)
+    });
+  }
+
+  kickMember(userId: string) {
+    if (!this.selectedConversation) return;
+    this.chatApi.kickMember(this.selectedConversation._id, userId).subscribe({
+      next: (updatedConv) => {
+        this.selectedConversation = updatedConv;
+        this.conversationState.addOrUpdateConversation(updatedConv);
+        
+        // Tải lại tin nhắn để hiển thị thông báo hệ thống
+        this.loadMessages(updatedConv._id);
+      },
+      error: (err) => console.error('Lỗi xóa thành viên:', err)
+    });
+  }
+
+  addMembers(memberIds: string[]) {
+    if (!this.selectedConversation) return;
+    this.chatApi.addMembers(this.selectedConversation._id, memberIds).subscribe({
+      next: (updatedConv) => {
+        this.selectedConversation = updatedConv;
+        this.conversationState.addOrUpdateConversation(updatedConv);
+        
+        // Tải lại tin nhắn để hiển thị thông báo hệ thống
+        this.loadMessages(updatedConv._id);
+      },
+      error: (err) => console.error('Lỗi thêm thành viên:', err)
+    });
+  }
+
+  private loadMessages(conversationId: string) {
+    this.chatApi.getMessageByConversation(conversationId).subscribe({
+      next: (res) => {
+        this.messages = [...res];
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Lỗi tải tin nhắn:', err)
+    });
+  }
+
+  dissolveGroup() {
+    if (!this.selectedConversation) return;
+    this.chatApi.dissolveGroup(this.selectedConversation._id).subscribe({
+      next: () => {
+        this.conversationState.loadConversations().subscribe();
+        this.selectedConversation = null;
+        this.messages = [];
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Lỗi giải tán nhóm:', err)
     });
   }
 

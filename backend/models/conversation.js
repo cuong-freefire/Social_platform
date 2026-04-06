@@ -22,6 +22,11 @@ const conversationSchema = new mongoose.Schema({
         trim: true
     },
 
+    groupImage: {
+        type: String,
+        default: 'https://primefaces.org/cdn/primeng/images/demo/avatar/ionitcu.png'
+    },
+
     creator: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

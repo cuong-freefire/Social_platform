@@ -1,0 +1,140 @@
+.about-container {
+    background: radial-gradient(circle at top right, rgba(168, 85, 247, 0.1), transparent),
+                radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.1), transparent);
+}
+
+.hero-section {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeInDown 1s ease-out;
+    padding-bottom: 2rem !important; /* Dịch nội dung lên một chút */
+}
+
+.hero-actions {
+    margin-top: -2rem; /* Dịch các nút lên */
+    position: relative;
+    z-index: 10;
+}
+
+.gay-message-container {
+    animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.contact-reveal {
+    animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes bounceIn {
+    0% { opacity: 0; transform: scale(0.3); }
+    50% { opacity: 1; transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.glow-btn {
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+    transition: all 0.3s ease;
+}
+
+.glow-btn:hover {
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.7);
+    transform: scale(1.05) translateY(-2px);
+}
+
+.hero-title {
+    animation: glow 3s infinite alternate;
+}
+
+.intro-section {
+    animation: fadeInLeft 1s ease-out 0.2s both;
+}
+
+.card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary-color);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.letter-circle {
+    transition: transform 0.3s ease;
+}
+
+.card:hover .letter-circle {
+    transform: rotateY(180deg);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    background: linear-gradient(45deg, var(--primary-400), var(--primary-600));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-item {
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: scale(1.1);
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px rgba(168, 85, 247, 0.2), 0 0 20px rgba(168, 85, 247, 0.1);
+    }
+    to {
+        text-shadow: 0 0 20px rgba(168, 85, 247, 0.5), 0 0 30px rgba(168, 85, 247, 0.3);
+    }
+}
+
+.creator-info {
+    background: linear-gradient(to right, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.5));
+}
+
+.stats-grid {
+    animation: fadeInUp 1s ease-out 0.4s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

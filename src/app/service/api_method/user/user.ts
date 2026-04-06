@@ -52,7 +52,7 @@ export class UserApi {
   }
 
   sendFriendRequest(id: string) {
-    return this.http.post<string>(`http://localhost:3000/user/send_request`, { id }).pipe(
+    return this.http.post<string>(`${this.apiUrl}/user/send_request`, { id }).pipe(
       catchError(err => {
         const message = err?.error.error || 'Có lỗi xảy ra';
         return throwError(() => new Error(message));
@@ -61,7 +61,7 @@ export class UserApi {
   }
 
   getFriendRequests() {
-    return this.http.get<any[]>(`http://localhost:3000/user/friend_requests`).pipe(
+    return this.http.get<any[]>(`${this.apiUrl}/user/friend_requests`).pipe(
       catchError(err => {
         const message = err?.error.error || 'Có lỗi xảy ra';
         return throwError(() => new Error(message));
@@ -70,7 +70,7 @@ export class UserApi {
   }
 
   acceptFriendRequest(requestId: string) {
-    return this.http.post<{ message: string }>(`http://localhost:3000/user/accept_request/${requestId}`, {}).pipe(
+    return this.http.post<{ message: string }>(`${this.apiUrl}/user/accept_request/${requestId}`, {}).pipe(
       catchError(err => {
         const message = err?.error.error || 'Có lỗi xảy ra';
         return throwError(() => new Error(message));
@@ -79,7 +79,7 @@ export class UserApi {
   }
 
   getFriendShipStatus(targetId: string) {
-    return this.http.get<{ status: 'friend' | 'sent' | 'received' | 'none' | 'self', requestId?: string }>(`http://localhost:3000/user/ship_status/${targetId}`).pipe(
+    return this.http.get<{ status: 'friend' | 'sent' | 'received' | 'none' | 'self', requestId?: string }>(`${this.apiUrl}/user/ship_status/${targetId}`, { withCredentials: true }).pipe(
       catchError(err => {
         const message = err?.error.error || 'Có lỗi xảy ra';
         return throwError(() => new Error(message));
@@ -88,7 +88,7 @@ export class UserApi {
   }
 
   searchUsers(query: string) {
-    return this.http.get<User[]>(`http://localhost:3000/user/search?q=${query}`).pipe(
+    return this.http.get<User[]>(`${this.apiUrl}/user/search?q=${query}`, { withCredentials: true }).pipe(
       catchError(err => {
         const message = err?.error.error || 'Có lỗi xảy ra';
         return throwError(() => new Error(message));

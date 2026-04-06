@@ -76,7 +76,46 @@ export class ChatApi {
   }
 
   renameGroup(conversationId: string, newGroupName: string) {
-    return this.http.patch<Conversation>(`${this.apiUrl}/chat/conversation/rename-group`, { conversationId, newGroupName }).pipe(
+    return this.http.patch<Conversation>(`${this.apiUrl}/chat/conversation/rename-group`, { conversationId, newGroupName }, { withCredentials: true }).pipe(
+      catchError(err => {
+        const message = err?.error.error || "Có lỗi xảy ra"
+        return throwError(() => new Error(message))
+      })
+    )
+  }
+
+  updateGroupImage(conversationId: string, image: File) {
+    const formData = new FormData();
+    formData.append('conversationId', conversationId);
+    formData.append('image', image);
+    return this.http.patch<Conversation>(`${this.apiUrl}/chat/conversation/update-group-image`, formData, { withCredentials: true }).pipe(
+      catchError(err => {
+        const message = err?.error.error || "Có lỗi xảy ra"
+        return throwError(() => new Error(message))
+      })
+    )
+  }
+
+  kickMember(conversationId: string, memberId: string) {
+    return this.http.post<Conversation>(`${this.apiUrl}/chat/conversation/kick-member`, { conversationId, memberId }, { withCredentials: true }).pipe(
+      catchError(err => {
+        const message = err?.error.error || "Có lỗi xảy ra"
+        return throwError(() => new Error(message))
+      })
+    )
+  }
+
+  addMembers(conversationId: string, memberIds: string[]) {
+    return this.http.post<Conversation>(`${this.apiUrl}/chat/conversation/add-members`, { conversationId, memberIds }, { withCredentials: true }).pipe(
+      catchError(err => {
+        const message = err?.error.error || "Có lỗi xảy ra"
+        return throwError(() => new Error(message))
+      })
+    )
+  }
+
+  dissolveGroup(conversationId: string) {
+    return this.http.delete<{ message: string, conversationId: string }>(`${this.apiUrl}/chat/conversation/dissolve/${conversationId}`, { withCredentials: true }).pipe(
       catchError(err => {
         const message = err?.error.error || "Có lỗi xảy ra"
         return throwError(() => new Error(message))

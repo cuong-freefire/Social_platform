@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Conversation from "../models/conversation.js";
 import Message from "../models/Message.js";
+import User from "../models/User.js";
 import { uploadToCloudinary } from "./cloudinaryController.js";
 
 export const getConversations = async (req, res) => {
@@ -9,9 +10,10 @@ export const getConversations = async (req, res) => {
 
         const conversations = await Conversation.find({ participants: userId })
             .populate("participants", "-password")
+            .populate("creator", "name image")
             .populate({
                 path: 'lastMessage',
-                select: 'user content isDeleted isEdited createdAt imageUrl',
+                select: 'user content isDeleted isEdited isSystem createdAt imageUrl',
                 populate: {
                     path: 'user',
                     select: 'name image',
@@ -221,7 +223,6 @@ export const renameGroup = async (req, res) => {
             return res.status(400).json({ error: "Đây không phải là cuộc hội thoại nhóm" });
         }
 
-        // Chỉ creator hoặc participant mới có quyền đổi tên? Ở đây cho phép bất kỳ ai trong nhóm đổi tên
         if (!conversation.participants.includes(userId.toString())) {
             return res.status(403).json({ error: "Bạn không có quyền đổi tên nhóm này" });
         }
@@ -236,6 +237,186 @@ export const renameGroup = async (req, res) => {
         res.status(200).json(updatedConversation);
     } catch (err) {
         res.status(500).json({ error: "Lỗi khi đổi tên nhóm" });
+    }
+};
+
+export const updateGroupImage = async (req, res) => {
+    try {
+        const userId = req.user;
+        const { conversationId } = req.body;
+        const file = req.file;
+
+        if (!file) return res.status(400).json({ error: "Vui lòng chọn ảnh" });
+
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) return res.status(404).json({ error: "Không tìm thấy cuộc hội thoại" });
+
+        // Nếu nhóm cũ chưa có creator, gán người đang thao tác là creator
+        if (!conversation.creator) {
+            conversation.creator = userId;
+            await conversation.save();
+        }
+
+        if (conversation.creator.toString() !== userId.toString()) {
+            return res.status(403).json({ error: "Chỉ trưởng nhóm mới có quyền đổi ảnh nhóm" });
+        }
+
+        const result = await uploadToCloudinary(file.buffer);
+        
+        const updatedConv = await Conversation.findByIdAndUpdate(conversationId, 
+            { groupImage: result.secure_url }, 
+            { new: true }
+        ).populate("participants", "-password").populate("creator", "name image");
+
+        res.status(200).json(updatedConv);
+    } catch (err) {
+        console.error("Error in updateGroupImage:", err);
+        res.status(500).json({ error: "Lỗi khi cập nhật ảnh nhóm" });
+    }
+};
+
+export const kickMember = async (req, res) => {
+    try {
+        const userId = req.user;
+        const { conversationId, memberId } = req.body;
+
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) return res.status(404).json({ error: "Không tìm thấy nhóm" });
+
+        if (!conversation.creator) {
+            conversation.creator = userId;
+            await conversation.save();
+        }
+
+        if (conversation.creator.toString() !== userId.toString()) {
+            return res.status(403).json({ error: "Chỉ trưởng nhóm mới có quyền xóa thành viên" });
+        }
+
+        if (memberId === userId.toString()) {
+            return res.status(400).json({ error: "Bạn không thể tự xóa chính mình khỏi nhóm" });
+        }
+
+        const admin = await User.findById(userId);
+        const member = await User.findById(memberId);
+
+        if (!admin || !member) {
+            return res.status(404).json({ error: "Không tìm thấy người dùng" });
+        }
+
+        const updatedConversation = await Conversation.findByIdAndUpdate(
+            conversationId,
+            { $pull: { participants: memberId } },
+            { new: true }
+        ).populate("participants", "-password").populate("creator", "name image");
+
+        // Tạo tin nhắn hệ thống
+        const systemMessage = await Message.create({
+            conversation: conversationId,
+            user: userId, // Người thực hiện hành động
+            content: `${member.name} đã bị ${admin.name} xóa khỏi nhóm`,
+            isSystem: true
+        });
+
+        // Cập nhật tin nhắn cuối cùng
+        updatedConversation.lastMessage = systemMessage._id;
+        await updatedConversation.save();
+
+        res.status(200).json(updatedConversation);
+    } catch (err) {
+        console.error("Error in kickMember:", err);
+        res.status(500).json({ error: "Lỗi khi xóa thành viên" });
+    }
+};
+
+export const dissolveGroup = async (req, res) => {
+    try {
+        const userId = req.user;
+        const { conversationId } = req.params;
+
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) return res.status(404).json({ error: "Không tìm thấy nhóm" });
+
+        if (!conversation.creator) {
+            conversation.creator = userId;
+            await conversation.save();
+        }
+
+        if (conversation.creator.toString() !== userId.toString()) {
+            return res.status(403).json({ error: "Chỉ trưởng nhóm mới có quyền giải tán nhóm" });
+        }
+
+        // Xóa tin nhắn
+        await Message.deleteMany({ conversation: conversationId });
+        
+        // Xóa hội thoại
+        await Conversation.deleteOne({ _id: conversationId });
+
+        res.status(200).json({ message: "Đã giải tán nhóm thành công", conversationId });
+    } catch (err) {
+        console.error("Error in dissolveGroup:", err);
+        res.status(500).json({ error: "Lỗi khi giải tán nhóm" });
+    }
+};
+
+export const addMembers = async (req, res) => {
+    try {
+        const userId = req.user;
+        const { conversationId, memberIds } = req.body;
+
+        if (!memberIds || !memberIds.length) {
+            return res.status(400).json({ error: "Vui lòng chọn thành viên để thêm" });
+        }
+
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) return res.status(404).json({ error: "Không tìm thấy nhóm" });
+
+        if (!conversation.isGroup) {
+            return res.status(400).json({ error: "Đây không phải là cuộc hội thoại nhóm" });
+        }
+
+        // Kiểm tra quyền (chỉ thành viên trong nhóm mới được thêm người mới, hoặc chỉ admin tùy bạn, ở đây cho phép mọi thành viên)
+        if (!conversation.participants.includes(userId.toString())) {
+            return res.status(403).json({ error: "Bạn không có quyền thêm thành viên vào nhóm này" });
+        }
+
+        // Lọc ra những người chưa có trong nhóm
+        const newMemberIds = memberIds.filter(id => !conversation.participants.includes(id.toString()));
+        
+        if (newMemberIds.length === 0) {
+            return res.status(400).json({ error: "Các thành viên này đã có trong nhóm" });
+        }
+
+        // Cập nhật danh sách thành viên
+        conversation.participants.push(...newMemberIds);
+        await conversation.save();
+
+        const admin = await User.findById(userId);
+        const newMembers = await User.find({ _id: { $in: newMemberIds } });
+        const newMemberNames = newMembers.map(m => m.name).join(", ");
+
+        // Tạo tin nhắn hệ thống
+        const systemMessage = await Message.create({
+            conversation: conversationId,
+            user: userId,
+            content: `${admin.name} đã thêm ${newMemberNames} vào nhóm`,
+            isSystem: true
+        });
+
+        conversation.lastMessage = systemMessage._id;
+        await conversation.save();
+
+        const updatedConversation = await Conversation.findById(conversationId)
+            .populate("participants", "-password")
+            .populate("creator", "name image")
+            .populate({
+                path: 'lastMessage',
+                populate: { path: 'user', select: 'name image' }
+            });
+
+        res.status(200).json(updatedConversation);
+    } catch (err) {
+        console.error("Error in addMembers:", err);
+        res.status(500).json({ error: "Lỗi khi thêm thành viên" });
     }
 };
 

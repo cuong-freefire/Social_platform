@@ -40,7 +40,7 @@
                      (click)="onSelect.emit(conv)"
                 >
                     <p-avatar 
-                        [image]="conv.isGroup ? 'https://primefaces.org/cdn/primeng/images/demo/avatar/ionitcu.png' : (getOtherParticipant(conv)?.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png')" 
+                        [image]="conv.isGroup ? (conv.groupImage || 'https://primefaces.org/cdn/primeng/images/demo/avatar/ionitcu.png') : (getOtherParticipant(conv)?.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png')" 
                         shape="circle" 
                         size="large"
                     ></p-avatar>
@@ -49,7 +49,7 @@
                         <div class="flex justify-content-between align-items-center">
                             <span class="text-sm text-gray-400 truncate">
                                 @if (conv.lastMessage) {
-                                    {{ conv.lastMessage.user?._id === currentUserId ? 'Bạn: ' : (conv.isGroup ? conv.lastMessage.user.name + ': ' : '') }}
+                                    {{ conv.lastMessage.user?._id === currentUserId ? 'Bạn: ' : (conv.isGroup ? (conv.lastMessage.user?.name || 'Người dùng') + ': ' : '') }}
                                     {{ conv.lastMessage.isDeleted ? 'Tin nhắn đã được thu hồi' : conv.lastMessage.content || 'Đã gửi một ảnh' }}
                                 } @else {
                                     Bắt đầu cuộc hội thoại

@@ -7,7 +7,8 @@ export interface Conversation {
     lastMessage?: Message;      // tin nhắn cuối
     isGroup: boolean;
     groupName?: string;
-    creator?: User;
+    groupImage?: string;
+    creator?: string | User;
     updatedAt: string;          // dùng để sort
     createdAt: string;
 }
