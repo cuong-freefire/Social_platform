@@ -36,4 +36,13 @@ export class NotificationApi {
       })
     );
   }
+
+  deleteNotification(id: string) {
+    return this.http.delete(`${this.apiUrl}/${id}`, { withCredentials: true }).pipe(
+      catchError(err => {
+        const message = err?.error?.error || 'Không thể xóa thông báo';
+        return throwError(() => new Error(message));
+      })
+    );
+  }
 }
