@@ -1,0 +1,32 @@
+.not-found-container {
+  text-align: center;
+  padding: 80px 20px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.error-code {
+  font-size: 120px;
+  font-weight: bold;
+  color: #ff5252;
+  margin: 0;
+}
+
+.error-message {
+  font-size: 20px;
+  margin: 20px 0 40px;
+  color: #444;
+}
+
+.home-button {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.home-button:hover {
+  background: #0056b3;
+}

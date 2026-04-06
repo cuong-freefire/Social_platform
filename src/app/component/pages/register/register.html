@@ -1,0 +1,50 @@
+<div class="flex align-items-center justify-content-center h-screen surface-ground">
+    <p-toast />
+
+    <form [formGroup]="registerForm" (ngSubmit)="onRegister()"
+        class="surface-card p-5 shadow-3 border-round w-23rem flex flex-column gap-4 border-1 border-primary-500">
+
+        <h2 class="text-center m-0">Đăng ký</h2>
+
+        <!-- Username -->
+        <p-iftalabel class="w-full">
+            <input pInputText id="username" formControlName="username" autocomplete="off" class="w-full"
+                [invalid]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched" />
+            <label for="username">Username</label>
+        </p-iftalabel>
+
+        <!-- Password -->
+        <p-iftalabel class="w-full">
+            <input pInputText id="password" type="password" formControlName="password" autocomplete="off" class="w-full"
+                [invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" />
+            <label for="password">Password</label>
+        </p-iftalabel>
+
+        <!-- Re-password -->
+        <p-iftalabel class="w-full">
+            <input pInputText id="repassword" type="password" formControlName="repassword" autocomplete="off" class="w-full"
+                [invalid]="registerForm.get('repassword')?.invalid && registerForm.get('repassword')?.touched" />
+            <label for="repassword">Confirm Password</label>
+        </p-iftalabel>
+
+        <!-- Email -->
+        <p-iftalabel class="w-full">
+            <input pInputText id="email" formControlName="email" autocomplete="off" class="w-full"
+                [invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" />
+            <label for="email">Email</label>
+        </p-iftalabel>
+
+        <!-- Name -->
+        <p-iftalabel class="w-full">
+            <input pInputText id="name" formControlName="name" autocomplete="off" class="w-full"
+                [invalid]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" />
+            <label for="name">Name</label>
+        </p-iftalabel>
+
+        <p-button type="submit" label="Register" styleClass="w-full p-3">
+        </p-button>
+
+        <a routerLink="/login" class="text-center">Đăng nhập</a>
+
+    </form>
+</div>

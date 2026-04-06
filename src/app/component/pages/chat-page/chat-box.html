@@ -1,0 +1,30 @@
+<div class="chat-page-container flex flex-column">
+    <app-navbar class="flex-shrink-0"></app-navbar>
+    <div class="chat-layout flex-grow-1">
+        <!-- Left Column: Conversation List -->
+        <app-conversations
+            [conversations]="(conversations$ | async) || []"
+            [selectedId]="selectedConversation?._id"
+            [currentUserId]="currentUser?._id"
+            (onSelect)="selectConversation($event)"
+            (onCreateGroup)="createGroup($event)"
+        ></app-conversations>
+
+        <!-- Right Column: Messages Window -->
+        <app-messages
+            [selectedConversation]="selectedConversation"
+            [messages]="messages"
+            [currentUserId]="currentUser?._id"
+            [newMessage]="newMessage"
+            [editingMsg]="editingMessage"
+            [replyingTo]="replyingToMessage"
+            (newMessageChange)="newMessage = $event"
+            (onSend)="sendMessage($event)"
+            (onEdit)="startEdit($event)"
+            (onDelete)="deleteMessage($event)"
+            (onReply)="startReply($event)"
+            (onCancel)="resetInput()"
+            (onRenameGroup)="renameGroup($event)"
+        ></app-messages>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+/* Giao diện Popover hiện đại */
+::ng-deep .modern-user-popover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid var(--p-surface-700) !important;
+    border-radius: 12px !important;
+    min-width: 320px;
+}
+
+::ng-deep .modern-user-popover .p-popover-content {
+    padding: 0;
+}
+
+/* Giao diện Popover Thông báo */
+::ng-deep .modern-notif-popover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid var(--p-surface-700) !important;
+    border-radius: 12px !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+::ng-deep .modern-notif-popover .p-popover-content {
+    padding: 0 !important;
+}
+
+::ng-deep .modern-notif-popover .p-popover-arrow {
+    display: none;
+}
+
+::ng-deep .p-input-icon-left {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+::ng-deep .p-input-icon-left > i {
+    position: absolute;
+    left: 0.75rem;
+    color: var(--p-surface-400);
+    z-index: 10;
+}
+
+::ng-deep .p-input-icon-left > .p-inputtext {
+    padding-left: 2.5rem !important;
+}
+
+::ng-deep .navbar-logo {
+    padding: 0.5rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.navbar-logo:hover {
+    background-color: var(--p-surface-800);
+    transform: scale(1.05);
+}
+
+.logo-text {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: -1px;
+    text-shadow: 0 0 15px rgba(var(--p-primary-500-rgb), 0.3);
+}
+
+.logo-dot {
+    box-shadow: 0 0 8px var(--p-primary-500);
+}
+
+.p-menubar {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-bottom: 1px solid var(--p-surface-700);
+}

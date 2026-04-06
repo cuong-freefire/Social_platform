@@ -1,0 +1,96 @@
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { catchError, throwError, map } from 'rxjs';
+import { User } from '../../../interface/user';
+import { UpdateUserResponse } from '../../../interface/update-user-response';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class UserApi {
+  private http = inject(HttpClient);
+
+  //Lấy thông tin người dùng
+  getUserInfor() {
+    return this.http.get<{ userObject: User }>('http://localhost:3000/user/me').pipe(
+      map(res => res.userObject),
+      catchError(err => {
+        const message = err.error?.error || 'Có lỗi xảy ra';
+        return throwError(() => new Error(message))
+      })
+    )
+  }
+
+  getUserInforById(id: string) {
+    return this.http.get<{ userObject: User }>(`http://localhost:3000/user/${id}`).pipe(
+      map(res => res.userObject),
+      catchError(err => {
+        const message = err.error?.error || 'Có lỗi xảy ra';
+        return throwError(() => new Error(message))
+      })
+    )
+  }
+
+  updateUserInfor(data: FormData) {
+    return this.http.patch<UpdateUserResponse>('http://localhost:3000/user/update', data).pipe(
+      catchError(err => {
+        const message = err?.error.error || 'Có lỗi xảy ra';
+        return throwError(() => new Error(message));
+      })
+    )
+  }
+
+  unFriend(id: string) {
+    return this.http.delete<User>(`http://localhost:3000/user/unfriend/${id}`).pipe(
+      catchError(err => {
+        const message = err?.error.error || 'Có lỗi xảy ra';
+        return throwError(() => new Error(message));
+      })
+    )
+  }
+
+  sendFriendRequest(id: string) {
+    return this.http.post<string>(`http://localhost:3000/user/send_request`, { id }).pipe(
+      catchError(err => {
+        const message = err?.error.error || 'Có lỗi xảy ra';
+        return throwError(() => new Error(message));
+      })
+    )
+  }
+
+  getFriendRequests() {
+    return this.http.get<any[]>(`http://localhost:3000/user/friend_requests`).pipe(
+      catchError(err => {
+        const message = err?.error.error || 'Có lỗi xảy ra';
+        return throwError(() => new Error(message));
+      })
+    )
+  }
+
+  acceptFriendRequest(requestId: string) {
+    return this.http.post<{ message: string }>(`http://localhost:3000/user/accept_request/${requestId}`, {}).pipe(
+      catchError(err => {
+        const message = err?.error.error || 'Có lỗi xảy ra';
+        return throwError(() => new Error(message));
+      })
+    )
+  }
+
+  getFriendShipStatus(targetId: string) {
+    return this.http.get<{ status: 'friend' | 'sent' | 'received' | 'none' | 'self', requestId?: string }>(`http://localhost:3000/user/ship_status/${targetId}`).pipe(
+      catchError(err => {
+        const message = err?.error.error || 'Có lỗi xảy ra';
+        return throwError(() => new Error(message));
+      })
+    )
+  }
+
+  searchUsers(query: string) {
+    return this.http.get<User[]>(`http://localhost:3000/user/search?q=${query}`).pipe(
+      catchError(err => {
+        const message = err?.error.error || 'Có lỗi xảy ra';
+        return throwError(() => new Error(message));
+      })
+    )
+  }
+}

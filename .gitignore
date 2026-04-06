@@ -42,3 +42,10 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Không tải node_modules (Angular & Node)
+node_modules/
+
+# Không tải file môi trường
+.env
+.env.*

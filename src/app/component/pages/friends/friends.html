@@ -1,0 +1,78 @@
+<app-navbar />
+<p-toast />
+<div class="friends-container py-5 px-3">
+    <div class="max-w-40rem mx-auto bg-surface-900 border-round-xl border-1 border-surface-700 shadow-4 p-4">
+        <h2 class="text-white mt-0 mb-4 flex align-items-center gap-2">
+            <i class="pi pi-users text-primary"></i>
+            Bạn bè
+        </h2>
+
+        <p-tabs [value]="0">
+            <p-tablist>
+                <p-tab [value]="0">Danh sách bạn bè</p-tab>
+                <p-tab [value]="1">Lời mời kết bạn ({{ friendRequests.length }})</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+                <p-tabpanel [value]="0">
+                    <div class="flex flex-column gap-3 mt-3">
+                        @if ((user$ | async)?.friends?.length) {
+                            @for (friend of (user$ | async)?.friends; track friend._id) {
+                                <div class="friend-item flex align-items-center justify-content-between p-3 bg-surface-800 border-round-lg hover:bg-surface-700 transition-colors">
+                                    <div class="flex align-items-center gap-3 cursor-pointer" (click)="goToDetail(friend._id)">
+                                        <p-avatar [image]="friend.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" shape="circle" size="large"></p-avatar>
+                                        <div class="flex flex-column">
+                                            <span class="text-white font-bold">{{ friend.name }}</span>
+                                            <span class="text-gray-400 text-sm">@{{ friend.username }}</span>
+                                        </div>
+                                    </div>
+                                    <button pButton 
+                                        label="Hủy kết bạn" 
+                                        icon="pi pi-user-minus" 
+                                        class="p-button-danger p-button-text p-button-sm"
+                                        (click)="onUnfriend(friend._id)"
+                                    ></button>
+                                </div>
+                            }
+                        } @else {
+                            <div class="flex flex-column align-items-center py-5 text-gray-500">
+                                <i class="pi pi-user-plus text-4xl mb-3"></i>
+                                <span>Bạn chưa có người bạn nào.</span>
+                            </div>
+                        }
+                    </div>
+                </p-tabpanel>
+
+                <p-tabpanel [value]="1">
+                    <div class="flex flex-column gap-3 mt-3">
+                        @if (friendRequests.length) {
+                            @for (request of friendRequests; track request._id) {
+                                <div class="friend-item flex align-items-center justify-content-between p-3 bg-surface-800 border-round-lg">
+                                    <div class="flex align-items-center gap-3 cursor-pointer" (click)="goToDetail(request.sender._id)">
+                                        <p-avatar [image]="request.sender.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" shape="circle" size="large"></p-avatar>
+                                        <div class="flex flex-column">
+                                            <span class="text-white font-bold">{{ request.sender.name }}</span>
+                                            <span class="text-gray-400 text-sm">@{{ request.sender.username }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button pButton 
+                                            label="Chấp nhận" 
+                                            icon="pi pi-check" 
+                                            class="p-button-success p-button-sm"
+                                            (click)="onAcceptRequest(request._id)"
+                                        ></button>
+                                    </div>
+                                </div>
+                            }
+                        } @else {
+                            <div class="flex flex-column align-items-center py-5 text-gray-500">
+                                <i class="pi pi-inbox text-4xl mb-3"></i>
+                                <span>Không có lời mời kết bạn nào.</span>
+                            </div>
+                        }
+                    </div>
+                </p-tabpanel>
+            </p-tabpanels>
+        </p-tabs>
+    </div>
+</div>

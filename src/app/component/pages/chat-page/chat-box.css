@@ -1,0 +1,31 @@
+.chat-page-container {
+    height: 100vh;
+    background-color: var(--p-surface-950);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure navbar is not fixed for this page to flow in flex */
+::ng-deep app-navbar .card {
+    position: static !important;
+}
+
+.chat-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* New Layout: Left = Conversations, Right = Messages */
+app-conversations {
+    width: 360px;
+    height: 100%;
+    border-right: 1px solid var(--p-surface-700);
+}
+
+app-messages {
+    flex: 1;
+    height: 100%;
+}

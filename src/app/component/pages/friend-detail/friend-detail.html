@@ -1,0 +1,179 @@
+<app-navbar />
+<p-toast />
+
+<div class="friend-detail-container">
+    @if (user) {
+        <!-- Cover Photo -->
+        <div class="profile-cover">
+            <div class="cover-overlay"></div>
+        </div>
+
+        <div class="profile-content-wrapper mx-auto max-w-60rem px-4">
+            <!-- Profile Header Card -->
+            <div class="profile-header-card bg-surface-900 border-1 border-surface-700 shadow-8 border-round-xl p-4 md:p-6 mb-4 relative overflow-visible">
+                <div class="flex flex-column md:flex-row align-items-center md:align-items-end gap-4">
+                    <!-- Avatar -->
+                    <div class="avatar-wrapper relative">
+                        <p-avatar 
+                            [image]="user.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" 
+                            shape="circle" 
+                            class="profile-avatar shadow-8 border-4 border-surface-900"
+                        ></p-avatar>
+                        <div class="status-indicator online"></div>
+                    </div>
+
+                    <!-- User Info & Actions -->
+                    <div class="flex-grow-1 flex flex-column md:flex-row justify-content-between align-items-center md:align-items-end gap-4 w-full">
+                        <div class="user-meta text-center md:text-left">
+                            <h1 class="text-white text-4xl font-bold m-0 flex align-items-center gap-2">
+                                {{ user.name }}
+                                <i class="pi pi-verified text-primary-500 text-xl" title="Tài khoản xác thực"></i>
+                            </h1>
+                            <span class="text-primary-400 text-xl block mt-1 font-medium">@{{ user.username }}</span>
+                            <div class="flex gap-3 mt-3 justify-content-center md:justify-content-start text-gray-400">
+                                <span class="flex align-items-center gap-1"><i class="pi pi-users"></i> {{ user.friends?.length || 0 }} bạn bè</span>
+                                <span class="flex align-items-center gap-1"><i class="pi pi-calendar"></i> Tham gia 2026</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons flex gap-2 mb-1">
+                            @switch (friendshipStatus) {
+                                @case ('friend') {
+                                    <button pButton 
+                                        label="Bạn bè" 
+                                        icon="pi pi-check" 
+                                        class="p-button-outlined p-button-secondary p-button-rounded px-4"
+                                        (click)="opFriend.toggle($event)"
+                                    ></button>
+                                    <p-popover #opFriend>
+                                         <button pButton 
+                                             label="Hủy kết bạn" 
+                                             icon="pi pi-user-minus" 
+                                             class="p-button-danger p-button-text w-full justify-content-start"
+                                             (click)="onUnfriend()"
+                                         ></button>
+                                     </p-popover>
+                                     <button pButton 
+                                         label="Nhắn tin" 
+                                         icon="pi pi-comments" 
+                                         class="p-button-primary p-button-rounded px-4 ml-2"
+                                         (click)="onMessage()"
+                                     ></button>
+                                 }
+                                @case ('sent') {
+                                    <button pButton 
+                                        label="Đã gửi lời mời" 
+                                        icon="pi pi-user-plus" 
+                                        class="p-button-secondary p-button-rounded px-4"
+                                        disabled="true"
+                                    ></button>
+                                }
+                                @case ('received') {
+                                    <button pButton 
+                                        label="Chấp nhận kết bạn" 
+                                        icon="pi pi-check-circle" 
+                                        class="p-button-success p-button-rounded px-4 shadow-4"
+                                        (click)="onAcceptRequest()"
+                                    ></button>
+                                }
+                                @case ('none') {
+                                    <button pButton 
+                                        label="Thêm bạn bè" 
+                                        icon="pi pi-user-plus" 
+                                        class="p-button-primary p-button-rounded px-4 shadow-4"
+                                        (click)="onAddFriend()"
+                                    ></button>
+                                }
+                            }
+                            <button pButton icon="pi pi-ellipsis-h" class="p-button-outlined p-button-secondary p-button-rounded"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Details Grid -->
+            <div class="grid">
+                <!-- Left Column: Info -->
+                <div class="col-12 lg:col-4">
+                    <div class="info-card bg-surface-900 border-1 border-surface-700 p-4 border-round-xl shadow-4 mb-4">
+                        <h3 class="text-white mt-0 mb-4 flex align-items-center gap-2">
+                            <i class="pi pi-info-circle text-primary-500"></i>
+                            Giới thiệu
+                        </h3>
+                        <div class="flex flex-column gap-4">
+                            <div class="flex align-items-center gap-3">
+                                <div class="icon-circle bg-surface-800 p-2 border-round-lg">
+                                    <i class="pi pi-envelope text-primary-400"></i>
+                                </div>
+                                <div class="flex flex-column">
+                                    <span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Email</span>
+                                    <span class="text-white font-medium">{{ user.email }}</span>
+                                </div>
+                            </div>
+                            <div class="flex align-items-center gap-3">
+                                <div class="icon-circle bg-surface-800 p-2 border-round-lg">
+                                    <i class="pi pi-map-marker text-primary-400"></i>
+                                </div>
+                                <div class="flex flex-column">
+                                    <span class="text-gray-500 text-xs uppercase font-bold tracking-wider">Vị trí</span>
+                                    <span class="text-white font-medium">Việt Nam</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Friends Preview Card -->
+                    <div class="info-card bg-surface-900 border-1 border-surface-700 p-4 border-round-xl shadow-4">
+                        <div class="flex justify-content-between align-items-center mb-4">
+                            <h3 class="text-white m-0 flex align-items-center gap-2">
+                                <i class="pi pi-users text-primary-500"></i>
+                                Bạn bè
+                            </h3>
+                            <span class="text-primary-400 text-sm cursor-pointer hover:underline">Xem tất cả</span>
+                        </div>
+                        <div class="grid grid-nogutter">
+                            @for (friend of user.friends?.slice(0, 6); track friend._id) {
+                                <div class="col-4 p-1">
+                                    <div class="friend-thumb text-center cursor-pointer" (click)="onNavigateFriend(friend._id)">
+                                        <p-avatar [image]="friend.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" shape="circle" size="large" class="shadow-2 hover:shadow-4 transition-all transition-duration-200"></p-avatar>
+                                        <span class="text-xs text-white block mt-1 truncate">{{ friend.name }}</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Timeline/Posts -->
+                <div class="col-12 lg:col-8">
+                    @if (isLoadingPosts) {
+                        <div class="bg-surface-900 border-1 border-surface-700 p-8 border-round-xl shadow-4 flex flex-column align-items-center justify-content-center text-gray-500">
+                            <i class="pi pi-spin pi-spinner text-4xl mb-3 text-primary-500"></i>
+                            <span>Đang tải bài viết...</span>
+                        </div>
+                    } @else {
+                        @if (userPosts.length > 0) {
+                            <div class="flex flex-column gap-4">
+                                @for (post of userPosts; track post._id) {
+                                    <app-post [post]="post"></app-post>
+                                }
+                            </div>
+                        } @else {
+                            <div class="bg-surface-900 border-1 border-surface-700 p-8 border-round-xl shadow-4 flex flex-column align-items-center justify-content-center text-gray-500">
+                                <i class="pi pi-images text-6xl mb-4 opacity-20"></i>
+                                <p class="text-xl font-medium m-0">Chưa có bài viết nào để hiển thị</p>
+                                <span class="text-sm">Khi {{ user.name }} đăng bài, chúng sẽ xuất hiện ở đây.</span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    } @else {
+        <div class="flex flex-column align-items-center justify-content-center min-h-screen text-gray-500">
+            <i class="pi pi-spin pi-spinner text-6xl mb-3 text-primary-500"></i>
+            <span class="text-xl">Đang tải hồ sơ...</span>
+        </div>
+    }
+</div>

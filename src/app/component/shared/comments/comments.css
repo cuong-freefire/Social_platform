@@ -1,0 +1,45 @@
+.comment-item p {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Tùy chỉnh thanh cuộn cho vùng bình luận */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--p-surface-700);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--p-surface-600);
+}
+
+.comments-container-wrapper {
+    max-height: 600px;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+    border-radius: 12px;
+}
+
+.comment-form-fixed {
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+}
+
+.comments-scroll-area {
+    scroll-behavior: smooth;
+}
+
+/* Hiệu ứng khi focus vào textarea */
+.comment-form-fixed textarea:focus {
+    border-color: var(--p-primary-color) !important;
+    box-shadow: 0 0 0 1px var(--p-primary-color) !important;
+}

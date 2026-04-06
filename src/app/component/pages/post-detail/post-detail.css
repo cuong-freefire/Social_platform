@@ -1,0 +1,49 @@
+.post-detail-wrapper {
+    min-height: 100vh;
+    background-color: var(--p-surface-950);
+    padding-top: 4rem; /* For fixed navbar */
+}
+
+.post-detail-container {
+    padding: 1rem;
+}
+
+.max-w-xl {
+    max-width: 600px; /* Thắt chặt kích thước bài viết giống FB */
+}
+
+/* Nút quay lại phong cách hiện đại */
+::ng-deep .back-btn {
+    color: var(--p-surface-400) !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease;
+}
+
+::ng-deep .back-btn:hover {
+    background-color: var(--p-surface-800) !important;
+    color: white !important;
+}
+
+/* Hiệu ứng mượt mà khi hiện bài viết */
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hộp thông báo lỗi */
+.error-box {
+    background-color: var(--p-surface-900);
+    border: 1px solid var(--p-surface-700);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Ghi đè kiểu dáng card khi nằm trong detail */
+::ng-deep .post-detail-container .modern-post-card {
+    border: 1px solid var(--p-surface-700) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4) !important;
+}

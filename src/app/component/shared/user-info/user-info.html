@@ -1,0 +1,63 @@
+<p-toast />
+<div class="user-info-container">
+  <p-card styleClass="user-info-card">
+    <ng-template pTemplate="header">
+      <div class="user-avatar-section">
+        <p-avatar
+          [image]="editedUser.image ?? 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'"
+          styleClass="user-avatar"
+          shape="circle"
+        />
+        <input
+          type="file"
+          #fileInput
+          (change)="onFileSelected($event)"
+          hidden
+        />
+        <p-button
+          icon="pi pi-pencil"
+          styleClass="p-button-rounded p-button-secondary edit-avatar-button"
+          (click)="fileInput.click()"
+        />
+      </div>
+    </ng-template>
+    <div class="user-details">
+      <div class="flex flex-column gap-4">
+        <div class="flex flex-column gap-2">
+          <label for="name" class="font-semibold text-sm text-surface-400">Họ và tên</label>
+          <input
+            pInputText
+            id="name"
+            [(ngModel)]="editedUser.name"
+            [placeholder]="user?.name ?? ''"
+            class="w-full"
+          />
+        </div>
+        <div class="flex flex-column gap-2">
+          <label for="email" class="font-semibold text-sm text-surface-400">Địa chỉ Email</label>
+          <input
+            pInputText
+            id="email"
+            [(ngModel)]="editedUser.email"
+            [placeholder]="user?.email ?? ''"
+            class="w-full"
+          />
+        </div>
+      </div>
+    </div>
+    <ng-template pTemplate="footer">
+      <div class="flex gap-3 w-full user-info-actions">
+        <p-button
+          label="Khôi phục"
+          styleClass="p-button-outlined flex-1"
+          (onClick)="cancelEdit()"
+        />
+        <p-button
+          label="Lưu thay đổi"
+          styleClass="flex-1"
+          (onClick)="onSubmit()"
+        />
+      </div>
+    </ng-template>
+  </p-card>
+</div>

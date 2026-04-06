@@ -1,0 +1,63 @@
+.user-info-container {
+  width: 100%;
+}
+
+.user-info-card {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.user-avatar-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 0;
+  background-color: var(--p-surface-800);
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid var(--p-surface-700);
+}
+
+.user-avatar {
+  width: 110px;
+  height: 110px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  border: 3px solid var(--p-surface-700);
+}
+
+.edit-avatar-button {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(25px); /* Đặt icon lệch phải một chút so với tâm ảnh */
+  width: 2.2rem !important;
+  height: 2.2rem !important;
+  border: 2px solid var(--p-surface-800) !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.user-details {
+  padding: 1.5rem;
+}
+
+.user-info-actions {
+  padding: 1.25rem 1.5rem;
+  background-color: var(--p-surface-900);
+  border-top: 1px solid var(--p-surface-700);
+  border-radius: 0 0 12px 12px;
+  display: flex;
+  gap: 1rem;
+}
+
+/* Đảm bảo các nút bấm có kích thước và chiều cao đồng đều */
+.user-info-actions p-button {
+  flex: 1;
+}
+
+::ng-deep .user-info-actions .p-button {
+  width: 100%;
+  height: 42px; /* Chiều cao cố định cho cả 2 nút */
+  justify-content: center;
+}

@@ -1,0 +1,95 @@
+<app-navbar />
+<p-toast />
+<div class="home-container py-5 px-3">
+    <div class="flex flex-column gap-5 align-items-center max-w-30rem mx-auto">
+        
+        <!-- Nút tạo post mới -->
+        <div class="w-full flex justify-content-center mb-2">
+            <button pButton 
+                label="Bạn đang nghĩ gì?" 
+                icon="pi pi-plus" 
+                class="p-button-rounded p-button-outlined w-full bg-surface-800 border-surface-700 text-gray-400 text-left justify-content-start px-4 h-3rem hover:bg-surface-700"
+                (click)="showCreateDialog()"
+            ></button>
+        </div>
+
+        <!-- List of Posts -->
+        @for (post of posts$ | async; track post._id) {
+            <app-post [post]="post" class="w-full" />
+        }
+
+        <!-- Bottom element for IntersectionObserver -->
+        <div #bottom class="h-1rem w-full"></div>
+    </div>
+</div>
+
+<!-- Dialog tạo post mới -->
+<p-dialog 
+    header="Tạo bài viết mới" 
+    [(visible)]="displayCreateDialog" 
+    (onHide)="cancelForm()"
+    [modal]="true" 
+    [draggable]="false" 
+    [resizable]="false"
+    styleClass="create-post-dialog bg-surface-900 border-surface-700 text-white"
+    [style]="{width: '450px'}"
+>
+    <div class="flex flex-column gap-4 py-3">
+        <div class="flex flex-column gap-2">
+            <label for="title" class="text-sm font-semibold">Tiêu đề</label>
+            <input 
+                pInputText 
+                id="title" 
+                [(ngModel)]="newPostTitle" 
+                placeholder="Nhập tiêu đề..." 
+                class="bg-surface-800 border-surface-700 text-white"
+            />
+        </div>
+
+        <div class="flex flex-column gap-2">
+            <label for="content" class="text-sm font-semibold">Nội dung</label>
+            <textarea 
+                pTextarea
+                id="content" 
+                [(ngModel)]="newPostContent" 
+                placeholder="Bạn đang nghĩ gì?" 
+                [autoResize]="true"
+                rows="4"
+                class="bg-surface-800 border-surface-700 text-white"
+            ></textarea>
+        </div>
+
+        <div class="flex flex-column gap-2">
+            <label class="text-sm font-semibold">Hình ảnh (tùy chọn)</label>
+            <p-fileUpload 
+                mode="basic" 
+                chooseLabel="Chọn ảnh" 
+                chooseIcon="pi pi-upload"
+                accept="image/*" 
+                maxFileSize="5000000" 
+                (onSelect)="onFileSelect($event)"
+                auto="true"
+                class="w-full"
+            ></p-fileUpload>
+            
+            @if (imagePreview) {
+                <div class="mt-2 border-round-lg overflow-hidden border-1 border-surface-700">
+                    <img [src]="imagePreview" alt="Preview" class="w-full block" style="max-height: 200px; object-fit: cover;" />
+                </div>
+            }
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-content-end gap-2">
+            <button pButton label="Hủy" class="p-button-text p-button-secondary" (click)="cancelForm()"></button>
+            <button pButton 
+                label="Đăng bài" 
+                icon="pi pi-check" 
+                class="p-button-primary p-button-rounded px-4"
+                [disabled]="!newPostTitle.trim() || !newPostContent.trim()"
+                (click)="submitPost()"
+            ></button>
+        </div>
+    </ng-template>
+</p-dialog>

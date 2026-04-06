@@ -1,0 +1,58 @@
+.about-container {
+    background-color: var(--p-surface-950);
+}
+
+.content-wrapper {
+    margin-top: 1rem;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, var(--p-surface-900) 0%, var(--p-surface-800) 100%);
+}
+
+.bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.letter-circle {
+    transition: transform 0.3s ease;
+}
+
+.card:hover .letter-circle {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    background-color: var(--p-surface-800) !important;
+}
+
+.divider {
+    transition: width 0.3s ease;
+}
+
+.hero-section:hover .divider {
+    width: 200px;
+}
+
+.line-height-3 {
+    line-height: 1.8;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-section, .intro-section, .card {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+.card:nth-child(1) { animation-delay: 0.2s; }
+.card:nth-child(2) { animation-delay: 0.4s; }
+.card:nth-child(3) { animation-delay: 0.6s; }

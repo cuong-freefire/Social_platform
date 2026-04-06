@@ -1,0 +1,15 @@
+.friends-container {
+    margin-top: 4rem;
+    height: calc(100vh - 4rem);
+    overflow-y: auto;
+}
+
+/* Custom scrollbar for friends */
+.friends-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.friends-container::-webkit-scrollbar-thumb {
+    background: var(--p-surface-700);
+    border-radius: 10px;
+}

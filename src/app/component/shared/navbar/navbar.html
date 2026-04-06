@@ -1,0 +1,131 @@
+<div class="card fixed top-0 left-0 w-full z-5">
+    <p-toast />
+    <p-menubar [model]="items">
+        <ng-template pTemplate="start">
+            <div class="navbar-logo flex align-items-center cursor-pointer" routerLink="/">
+                <span class="logo-text text-3xl font-bold tracking-tight">
+                    <span class="text-primary-500">G</span>
+                    <span class="text-white">A</span>
+                    <span class="text-primary-400">Y</span>
+                </span>
+                <div class="logo-dot w-2 h-2 border-round-circle bg-primary-500 ml-1"></div>
+            </div>
+        </ng-template>
+
+        <ng-template pTemplate="item" let-item let-root="root">
+            <a pRipple class="flex items-center px-4 py-3 cursor-pointer gap-2">
+                <span>{{ item.label }}</span>
+                <p-badge *ngIf="item.badge" [ngClass]="{ 'ms-auto': !root }" [value]="item.badge" />
+                <span *ngIf="item.shortcut"
+                    class="ms-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1">{{
+                    item.shortcut }}</span>
+                <i *ngIf="item.items" [ngClass]="['ms-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"></i>
+            </a>
+        </ng-template>
+
+        <ng-template pTemplate="end">
+            <div class="flex align-items-center gap-3">
+                <p-autoComplete 
+                    [(ngModel)]="searchQuery" 
+                    [suggestions]="searchResults" 
+                    (completeMethod)="onSearch($event)" 
+                    (onSelect)="onSelectUser($event)"
+                    field="name" 
+                    placeholder="Tìm kiếm người dùng..." 
+                    styleClass="navbar-search"
+                    inputStyleClass="p-inputtext-sm w-15rem"
+                    appendTo="body"
+                >
+                    <ng-template let-user pTemplate="item">
+                        <div class="flex align-items-center gap-2">
+                            <p-avatar [image]="user.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" shape="circle" size="normal"></p-avatar>
+                            <div class="flex flex-column">
+                                <span class="font-bold text-sm text-white">{{ user.name }}</span>
+                                <span class="text-xs text-gray-400">@{{ user.username }}</span>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-autoComplete>
+
+                <div class="relative flex align-items-center">
+                    <i 
+                        class="pi pi-bell text-xl cursor-pointer p-2 hover:bg-surface-800 border-circle transition-all duration-200" 
+                        (click)="notifOp.toggle($event)"
+                    ></i>
+                    @if (unreadCount$ | async; as count) {
+                        @if (count > 0) {
+                            <p-badge 
+                                [value]="count > 99 ? '99+' : count" 
+                                severity="danger"
+                                styleClass="absolute"
+                                [style]="{ 
+                                    'top': '2px', 
+                                    'right': '2px', 
+                                    'transform': 'scale(0.8)',
+                                    'transform-origin': 'top right',
+                                    'min-width': '1.25rem',
+                                    'height': '1.25rem',
+                                    'line-height': '1.25rem',
+                                    'border': '2px solid var(--p-surface-900)'
+                                }"
+                            ></p-badge>
+                        }
+                    }
+                </div>
+
+                <p-popover #notifOp styleClass="modern-notif-popover" appendTo="body">
+                    <div class="flex flex-column" style="width: 350px; max-height: 500px;">
+                        <div class="p-3 border-bottom-1 surface-border flex justify-content-between align-items-center bg-surface-900 sticky top-0 z-1">
+                            <span class="font-bold text-lg">Thông báo</span>
+                            <button pButton type="button" label="Đánh dấu tất cả đã đọc" class="p-button-text p-button-sm p-0" (click)="markAllAsRead()"></button>
+                        </div>
+                        
+                        <div class="overflow-y-auto flex-grow-1 bg-surface-950">
+                            @if ((notifications$ | async)?.length === 0) {
+                                <div class="p-5 text-center text-gray-500">
+                                    <i class="pi pi-bell-slash text-4xl mb-2"></i>
+                                    <p>Không có thông báo nào</p>
+                                </div>
+                            } @else {
+                                @for (notif of (notifications$ | async); track notif._id) {
+                                    <div class="p-3 flex gap-3 cursor-pointer hover:bg-surface-800 transition-all border-bottom-1 surface-border relative"
+                                         [class.bg-surface-900]="!notif.isRead"
+                                         (click)="onNotificationClick(notif); notifOp.hide()">
+                                        @if (!notif.isRead) {
+                                            <div class="absolute left-0 top-0 bottom-0 bg-primary-500" style="width: 4px;"></div>
+                                        }
+                                        <p-avatar [image]="notif.sender?.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" shape="circle" size="normal"></p-avatar>
+                                        <div class="flex flex-column gap-1 flex-grow-1">
+                                            <span class="text-sm leading-tight" [class.font-bold]="!notif.isRead">{{ notif.content }}</span>
+                                            <span class="text-xs text-gray-500">{{ notif.createdAt | date:'HH:mm dd/MM/yyyy' }}</span>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </p-popover>
+                
+                <p-avatar
+                    [image]="(user$ | async)?.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'"
+                    shape="circle" 
+                    (click)="op.toggle($event)" 
+                    styleClass="cursor-pointer"
+                />
+                
+                <p-popover #op (onShow)="isPopoverVisible = true" (onHide)="isPopoverVisible = false" styleClass="modern-user-popover" appendTo="body">
+                    @if (isPopoverVisible) {
+                        <app-user-info />
+                    }
+                    <div class="p-3 border-top-1 surface-border bg-surface-900" style="border-radius: 0 0 12px 12px;">
+                        <button pButton type="button" (click)="logout()" class="p-button-text p-button-danger w-full flex align-items-center gap-2 px-3 py-2">
+                            <i class="pi pi-sign-out"></i>
+                            <span class="font-semibold">Đăng xuất</span>
+                        </button>
+                    </div>
+                </p-popover>
+            </div>
+        </ng-template>
+    </p-menubar>
+
+</div>
