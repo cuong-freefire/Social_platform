@@ -50,4 +50,14 @@ export class PostsState {
       })
     )
   }
+
+  deletePost(postId: string) {
+    const postsDefault = this.postsSubject.getValue();
+    return this.postApi.deletePost(postId).pipe(
+      tap({
+        next: () => this.postsSubject.next(postsDefault?.filter(p => p._id !== postId) ?? []),
+        error: () => this.postsSubject.next(postsDefault)
+      })
+    )
+  }
 }

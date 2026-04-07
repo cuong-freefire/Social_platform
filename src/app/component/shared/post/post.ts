@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { UserState } from '../../../service/state/user_state/user-state';
 import { User } from '../../../interface/user';
 import { Post as PostDto } from '../../../interface/post';
@@ -11,6 +11,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { Comments } from '../comments/comments';
 import { Router, RouterModule } from '@angular/router';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-post',
@@ -22,17 +23,19 @@ import { Router, RouterModule } from '@angular/router';
     AvatarModule,
     ButtonModule,
     Comments,
-    RouterModule
+    RouterModule,
+    ConfirmDialogModule
   ],
   templateUrl: './post.html',
   styleUrl: './post.css',
-  providers: [MessageService]
+  providers: [MessageService, ConfirmationService]
 })
 export class Post implements OnInit {
   @Input() post!: PostDto;
   @Input() showComments = false;
   
   private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
   private userInfoState = inject(UserState);
   private postsState = inject(PostsState);
   private router = inject(Router);
@@ -41,10 +44,40 @@ export class Post implements OnInit {
   user$ = this.userInfoState.user$;
   user!: User | null;
 
+  isDeleting = false;
+
   ngOnInit(): void {
     this.user$.subscribe((user) => {
       this.user = user;
       this.cdr.detectChanges();
+    });
+  }
+
+  get isOwner(): boolean {
+    return this.post.user?._id === this.user?._id;
+  }
+
+  deletePost() {
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc chắn muốn xóa bài viết này không?',
+      header: 'Xác nhận xóa',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Xóa',
+      rejectLabel: 'Hủy',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.isDeleting = true;
+        this.postsState.deletePost(this.post._id).subscribe({
+          next: () => {
+            this.isDeleting = false;
+            this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa bài viết' });
+          },
+          error: (err) => {
+            this.isDeleting = false;
+            this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message });
+          }
+        });
+      }
     });
   }
 

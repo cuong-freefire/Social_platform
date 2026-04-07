@@ -47,6 +47,7 @@ export class Home implements OnInit, AfterViewInit {
   newPostContent = '';
   selectedFile: File | null = null;
   imagePreview: string | null = null;
+  isPosting = false;
 
   ngOnInit(): void {
     this.postsState.loadPosts(this.page.toString(), this.limit.toString()).subscribe();
@@ -83,8 +84,9 @@ export class Home implements OnInit, AfterViewInit {
   }
 
   submitPost() {
-    if (!this.newPostTitle.trim() || !this.newPostContent.trim()) return;
+    if (!this.newPostTitle.trim() || !this.newPostContent.trim() || this.isPosting) return;
 
+    this.isPosting = true;
     const formData = new FormData();
     formData.append('title', this.newPostTitle);
     formData.append('content', this.newPostContent);
@@ -94,12 +96,14 @@ export class Home implements OnInit, AfterViewInit {
 
     this.postsState.createPosts(formData).subscribe({
       next: () => {
+        this.isPosting = false;
         this.displayCreateDialog = false;
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đăng bài thành công!' });
         this.resetForm();
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message });
+        this.isPosting = false;
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message || 'Không thể đăng bài' });
       }
     });
   }

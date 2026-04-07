@@ -80,4 +80,13 @@ export class PostApi {
       })
     )
   }
+
+  deletePost(postId: string) {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/post/${postId}`).pipe(
+      catchError(err => {
+        const message = err?.error.error || "Có lỗi xảy ra";
+        return throwError(() => new Error(message))
+      })
+    )
+  }
 }
