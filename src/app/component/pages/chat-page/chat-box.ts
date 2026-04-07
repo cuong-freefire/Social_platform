@@ -225,6 +225,27 @@ export class ChatPage implements OnInit, OnDestroy {
     });
   }
 
+  leaveGroup(data: { newAdminId?: string }) {
+    if (!this.selectedConversation) return;
+    this.chatApi.leaveGroup(this.selectedConversation._id, data.newAdminId).subscribe({
+      next: (res: any) => {
+        if (res.conversationId) {
+          // Trường hợp nhóm bị xóa (do người cuối cùng rời đi)
+          this.conversationState.loadConversations().subscribe();
+          this.selectedConversation = null;
+          this.messages = [];
+        } else {
+          // Trường hợp rời nhóm thành công nhưng nhóm vẫn còn người khác
+          this.conversationState.loadConversations().subscribe();
+          this.selectedConversation = null;
+          this.messages = [];
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Lỗi khi rời nhóm:', err)
+    });
+  }
+
   private loadMessages(conversationId: string) {
     this.chatApi.getMessageByConversation(conversationId).subscribe({
       next: (res) => {

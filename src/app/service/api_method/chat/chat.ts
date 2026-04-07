@@ -114,6 +114,15 @@ export class ChatApi {
     )
   }
 
+  leaveGroup(conversationId: string, newAdminId?: string) {
+    return this.http.post<Conversation | { message: string, conversationId: string }>(`${this.apiUrl}/chat/conversation/leave`, { conversationId, newAdminId }, { withCredentials: true }).pipe(
+      catchError(err => {
+        const message = err?.error.error || "Có lỗi xảy ra"
+        return throwError(() => new Error(message))
+      })
+    )
+  }
+
   dissolveGroup(conversationId: string) {
     return this.http.delete<{ message: string, conversationId: string }>(`${this.apiUrl}/chat/conversation/dissolve/${conversationId}`, { withCredentials: true }).pipe(
       catchError(err => {

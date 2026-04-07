@@ -223,11 +223,43 @@
         </div>
 
         @if (isCreator) {
-            <div class="w-full mt-4 pt-3 border-top-1 surface-border">
+            <div class="w-full mt-4 pt-3 border-top-1 surface-border flex flex-column gap-2">
                 <button pButton label="Giải tán nhóm" icon="pi pi-trash" class="p-button-danger p-button-outlined w-full p-button-rounded" (click)="dissolveGroup()"></button>
+                <button pButton label="Rời khỏi nhóm" icon="pi pi-sign-out" class="p-button-warning p-button-outlined w-full p-button-rounded" (click)="leaveGroup()"></button>
+            </div>
+        } @else {
+            <div class="w-full mt-4 pt-3 border-top-1 surface-border">
+                <button pButton label="Rời khỏi nhóm" icon="pi pi-sign-out" class="p-button-danger p-button-outlined w-full p-button-rounded" (click)="leaveGroup()"></button>
             </div>
         }
     </div>
+</p-dialog>
+
+<!-- Assign Admin Before Leave Dialog -->
+<p-dialog header="Chỉ định trưởng nhóm mới" [(visible)]="displayAssignAdminDialog" [modal]="true" [style]="{width: '400px'}" styleClass="bg-surface-900 text-white">
+    <div class="flex flex-column gap-3 py-3">
+        <p class="text-sm text-gray-300">Vui lòng chọn một thành viên để làm trưởng nhóm mới trước khi bạn rời khỏi nhóm.</p>
+        <div class="members-select-list overflow-y-auto max-h-15rem flex flex-column gap-2 bg-surface-800 p-2 border-round-xl">
+            @for (member of otherMembers; track member._id) {
+                <div class="member-select-item flex align-items-center justify-content-between p-2 hover:bg-surface-700 border-round-lg transition-all cursor-pointer" 
+                     [class.bg-primary-900]="selectedNewAdmin?._id === member._id"
+                     (click)="selectedNewAdmin = member">
+                    <div class="flex align-items-center gap-3">
+                        <p-avatar [image]="member.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" shape="circle"></p-avatar>
+                        <span class="text-white font-medium">{{ member.name }}</span>
+                    </div>
+                    @if (selectedNewAdmin?._id === member._id) {
+                        <i class="pi pi-check text-primary-500"></i>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton label="Hủy" class="p-button-text p-button-secondary" (click)="displayAssignAdminDialog = false"></button>
+        <button pButton label="Xác nhận rời đi" icon="pi pi-check" class="p-button-primary p-button-rounded px-4" 
+            [disabled]="!selectedNewAdmin" (click)="submitAssignAdmin()"></button>
+    </ng-template>
 </p-dialog>
 
 <!-- Add Member Dialog -->

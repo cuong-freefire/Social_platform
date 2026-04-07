@@ -420,6 +420,76 @@ export const addMembers = async (req, res) => {
     }
 };
 
+export const leaveGroup = async (req, res) => {
+    try {
+        const userId = req.user;
+        const { conversationId, newAdminId } = req.body;
+
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) return res.status(404).json({ error: "Không tìm thấy nhóm" });
+
+        if (!conversation.isGroup) {
+            return res.status(400).json({ error: "Đây không phải là cuộc hội thoại nhóm" });
+        }
+
+        const isCreator = conversation.creator && conversation.creator.toString() === userId.toString();
+        
+        // Nếu là trưởng nhóm rời đi, phải chỉ định admin mới (trừ khi là người cuối cùng)
+        if (isCreator && conversation.participants.length > 1) {
+            if (!newAdminId) {
+                return res.status(400).json({ error: "Bạn cần chỉ định trưởng nhóm mới trước khi rời đi" });
+            }
+            if (!conversation.participants.includes(newAdminId.toString())) {
+                return res.status(400).json({ error: "Người được chỉ định không phải thành viên nhóm" });
+            }
+            conversation.creator = newAdminId;
+        }
+
+        // Xóa người dùng khỏi danh sách participants
+        conversation.participants = conversation.participants.filter(p => p.toString() !== userId.toString());
+
+        const user = await User.findById(userId);
+        let systemContent = `${user.name} đã rời khỏi nhóm`;
+
+        if (isCreator && conversation.participants.length > 0 && newAdminId) {
+            const newAdmin = await User.findById(newAdminId);
+            systemContent = `${user.name} đã rời nhóm và chỉ định ${newAdmin.name} làm trưởng nhóm mới`;
+        }
+
+        // Tạo tin nhắn hệ thống
+        const systemMessage = await Message.create({
+            conversation: conversationId,
+            user: userId,
+            content: systemContent,
+            isSystem: true
+        });
+
+        conversation.lastMessage = systemMessage._id;
+
+        // Nếu không còn ai trong nhóm, xóa luôn hội thoại
+        if (conversation.participants.length === 0) {
+            await Message.deleteMany({ conversation: conversationId });
+            await Conversation.deleteOne({ _id: conversationId });
+            return res.status(200).json({ message: "Đã rời và xóa nhóm vì không còn thành viên", conversationId });
+        }
+
+        await conversation.save();
+
+        const updatedConversation = await Conversation.findById(conversationId)
+            .populate("participants", "-password")
+            .populate("creator", "name image")
+            .populate({
+                path: 'lastMessage',
+                populate: { path: 'user', select: 'name image' }
+            });
+
+        res.status(200).json(updatedConversation);
+    } catch (err) {
+        console.error("Error in leaveGroup:", err);
+        res.status(500).json({ error: "Lỗi khi rời khỏi nhóm" });
+    }
+};
+
 export const getOrCreateConversation = async (req, res) => {
     try {
         const senderId = req.user;

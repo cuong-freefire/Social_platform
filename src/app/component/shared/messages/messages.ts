@@ -41,6 +41,7 @@ export class MessagesWindow implements AfterViewChecked {
   @Output() onKickMember = new EventEmitter<string>();
   @Output() onDissolveGroup = new EventEmitter<void>();
   @Output() onAddMembers = new EventEmitter<string[]>();
+  @Output() onLeaveGroup = new EventEmitter<{newAdminId?: string}>();
 
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
@@ -56,15 +57,17 @@ export class MessagesWindow implements AfterViewChecked {
   displayGroupInfoDialog: boolean = false;
   displayConfirmDialog: boolean = false;
   displayAddMemberDialog: boolean = false;
+  displayAssignAdminDialog: boolean = false;
   
   confirmTitle: string = '';
   confirmMessage: string = '';
-  confirmAction: 'kick' | 'dissolve' | null = null;
+  confirmAction: 'kick' | 'dissolve' | 'leave' | null = null;
   pendingMemberId: string | null = null;
   newGroupName: string = '';
   
   friends: User[] = [];
   selectedFriends: User[] = [];
+  selectedNewAdmin: User | null = null;
 
   constructor() {
     this.userState.user$.subscribe(user => {
@@ -227,8 +230,41 @@ export class MessagesWindow implements AfterViewChecked {
     } else if (this.confirmAction === 'dissolve') {
       this.displayGroupInfoDialog = false;
       this.onDissolveGroup.emit();
+    } else if (this.confirmAction === 'leave') {
+      this.handleLeaveLogic();
     }
     this.closeConfirmDialog();
+  }
+
+  leaveGroup() {
+    this.confirmTitle = 'Xác nhận rời nhóm';
+    this.confirmMessage = 'Bạn có chắc chắn muốn rời khỏi nhóm này?';
+    this.confirmAction = 'leave';
+    this.displayConfirmDialog = true;
+  }
+
+  private handleLeaveLogic() {
+    if (this.isCreator && this.selectedConversation && this.selectedConversation.participants.length > 1) {
+      // Trưởng nhóm phải chỉ định admin mới
+      this.displayAssignAdminDialog = true;
+    } else {
+      // Thành viên bình thường hoặc trưởng nhóm của nhóm 1 người
+      this.displayGroupInfoDialog = false;
+      this.onLeaveGroup.emit({});
+    }
+  }
+
+  submitAssignAdmin() {
+    if (this.selectedNewAdmin) {
+      this.displayGroupInfoDialog = false;
+      this.displayAssignAdminDialog = false;
+      this.onLeaveGroup.emit({ newAdminId: this.selectedNewAdmin._id });
+    }
+  }
+
+  get otherMembers() {
+    if (!this.selectedConversation || !this.currentUserId) return [];
+    return this.selectedConversation.participants.filter(p => p._id !== this.currentUserId);
   }
 
   closeConfirmDialog() {

@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifyToken } from '../middleware/auth.js';
-import { getConversations, getMessageByConversationId, sendMessage, editMessage, deleteMessage, getOrCreateConversation, createGroup, renameGroup, updateGroupImage, kickMember, dissolveGroup, addMembers } from '../controller/chatController.js';
+import { getConversations, getMessageByConversationId, sendMessage, editMessage, deleteMessage, getOrCreateConversation, createGroup, renameGroup, updateGroupImage, kickMember, dissolveGroup, addMembers, leaveGroup } from '../controller/chatController.js';
 import multer from 'multer';
 
 const storage = multer.memoryStorage();
@@ -18,6 +18,7 @@ chatRouter.patch('/conversation/rename-group', verifyToken, renameGroup);
 chatRouter.patch('/conversation/update-group-image', verifyToken, upload.single('image'), updateGroupImage);
 chatRouter.post('/conversation/kick-member', verifyToken, kickMember);
 chatRouter.post('/conversation/add-members', verifyToken, addMembers);
+chatRouter.post('/conversation/leave', verifyToken, leaveGroup);
 chatRouter.delete('/conversation/dissolve/:conversationId', verifyToken, dissolveGroup);
 chatRouter.get('/message/all/:id', verifyToken, getMessageByConversationId);
 chatRouter.post('/message/send_message', verifyToken, (req, res, next) => {
