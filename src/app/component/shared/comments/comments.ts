@@ -50,6 +50,8 @@ export class Comments implements AfterViewInit, OnInit {
   replyContent = '';
   isSubmitting = false; // Trạng thái đang gửi comment
   isReplying = false;   // Trạng thái đang trả lời comment
+  expandedComments: Set<string> = new Set(); // Lưu ID các comment đang mở rộng
+  readonly COMMENT_THRESHOLD = 150; // Giới hạn ký tự cho comment
 
   commentsSubject = new BehaviorSubject<Comment[]>([]);
   comment$ = this.commentsSubject.asObservable();
@@ -232,6 +234,31 @@ export class Comments implements AfterViewInit, OnInit {
       },
       error: (err) => this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message })
     })
+  }
+
+  isCommentExpanded(id: string): boolean {
+    return this.expandedComments.has(id);
+  }
+
+  toggleCommentExpand(id: string) {
+    if (this.expandedComments.has(id)) {
+      this.expandedComments.delete(id);
+    } else {
+      this.expandedComments.add(id);
+    }
+    this.cdr.detectChanges();
+  }
+
+  getCommentContent(comment: Comment): string {
+    if (!comment.content) return '';
+    if (this.isCommentExpanded(comment._id) || comment.content.length <= this.COMMENT_THRESHOLD) {
+      return comment.content;
+    }
+    return comment.content.substring(0, this.COMMENT_THRESHOLD) + '...';
+  }
+
+  shouldShowCommentSeeMore(comment: Comment): boolean {
+    return (comment.content?.length ?? 0) > this.COMMENT_THRESHOLD;
   }
 
 }

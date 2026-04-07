@@ -3,6 +3,19 @@
     word-break: break-word;
 }
 
+.see-more-btn {
+    color: var(--p-primary-400);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    display: inline-block;
+}
+
+.see-more-btn:hover {
+    text-decoration: underline;
+}
+
 /* Tùy chỉnh thanh cuộn cho vùng bình luận */
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;

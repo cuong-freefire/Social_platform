@@ -46,6 +46,8 @@ export class Post implements OnInit {
 
   isDeleting = false;
   isLiking = false;
+  isExpanded = false;
+  readonly CONTENT_THRESHOLD = 300; // Số ký tự tối đa trước khi ẩn
 
   ngOnInit(): void {
     this.user$.subscribe((user) => {
@@ -131,5 +133,22 @@ export class Post implements OnInit {
       this.post.commentCount = (this.post.commentCount ?? 0) + change;
       this.cdr.detectChanges();
     }
+  }
+
+  get displayedContent(): string {
+    if (!this.post?.content) return '';
+    if (this.isExpanded || this.post.content.length <= this.CONTENT_THRESHOLD) {
+      return this.post.content;
+    }
+    return this.post.content.substring(0, this.CONTENT_THRESHOLD) + '...';
+  }
+
+  get shouldShowSeeMore(): boolean {
+    return (this.post?.content?.length ?? 0) > this.CONTENT_THRESHOLD;
+  }
+
+  toggleExpand() {
+    this.isExpanded = !this.isExpanded;
+    this.cdr.detectChanges();
   }
 }

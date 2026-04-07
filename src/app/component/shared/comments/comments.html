@@ -72,7 +72,13 @@
                     </span>
                     <span class="text-xs text-gray-500">{{ comment.createdAt | date:'short' }}</span>
                 </div>
-                <p class="text-sm text-gray-300 m-0 line-height-3">{{ comment.content }}</p>
+                <p class="text-sm text-gray-300 m-0 line-height-3">{{ getCommentContent(comment) }}</p>
+                
+                @if (shouldShowCommentSeeMore(comment)) {
+                    <span class="see-more-btn" (click)="toggleCommentExpand(comment._id)">
+                        {{ isCommentExpanded(comment._id) ? 'Thu gọn' : 'Xem thêm' }}
+                    </span>
+                }
                 
                 <!-- Actions cho comment -->
                 @if (!comment.isDeleted) {

@@ -9,6 +9,21 @@
 .post-content p {
     font-size: 1rem;
     line-height: 1.5;
+    white-space: pre-wrap; /* Hiển thị xuống dòng */
+    word-break: break-word;
+}
+
+.see-more-btn {
+    color: var(--p-primary-400);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    display: inline-block;
+}
+
+.see-more-btn:hover {
+    text-decoration: underline;
 }
 
 /* Cải thiện các nút tương tác */
