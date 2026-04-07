@@ -45,24 +45,48 @@
 }
 
 ::ng-deep .navbar-logo {
-    padding: 0.5rem;
+    padding: 0.25rem 0.5rem;
     border-radius: 12px;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
 }
 
 .navbar-logo:hover {
     background-color: var(--p-surface-800);
-    transform: scale(1.05);
 }
 
-.logo-text {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    letter-spacing: -1px;
-    text-shadow: 0 0 15px rgba(var(--p-primary-500-rgb), 0.3);
+.navbar-logo:hover .animated-logo {
+    transform: scale(1.1);
 }
 
-.logo-dot {
-    box-shadow: 0 0 8px var(--p-primary-500);
+.animated-logo {
+    transition: transform 0.3s ease;
+}
+
+.svg-text {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: 900;
+    font-size: 32px;
+    text-transform: uppercase;
+}
+
+.g-letter { animation: letterPulse 2s infinite ease-in-out; }
+.a-letter { animation: letterPulse 2s infinite ease-in-out 0.3s; }
+.y-letter { animation: letterPulse 2s infinite ease-in-out 0.6s; }
+
+.svg-dot {
+    animation: dotJump 1.5s infinite ease-in-out;
+}
+
+@keyframes letterPulse {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    50% { transform: translateY(-3px); opacity: 0.8; }
+}
+
+@keyframes dotJump {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-10px) scale(1.2); fill: #FFFFFF; }
 }
 
 .p-menubar {
@@ -129,7 +153,8 @@
         z-index: 1000;
     }
 
-    .logo-text {
-        font-size: 1.25rem !important;
+    .animated-logo {
+        transform: scale(0.85);
+        transform-origin: left center;
     }
 }

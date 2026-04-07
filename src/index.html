@@ -5,7 +5,26 @@
   <title>Test1</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <style>
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+      }
+      @keyframes bounce {
+        from { transform: translateY(0); }
+        to { transform: translateY(-10px); }
+      }
+      .logo-text { font: bold 40px sans-serif; animation: pulse 2s infinite ease-in-out; transform-origin: center; }
+      .dot { fill: %233B82F6; animation: bounce 1s infinite alternate ease-in-out; }
+    </style>
+    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="logo-text">
+      <tspan fill="%233B82F6">G</tspan>
+      <tspan fill="white">A</tspan>
+      <tspan fill="%2360A5FA">Y</tspan>
+    </text>
+    <circle cx="85" cy="40" r="6" class="dot" />
+  </svg>'>
 </head>
 <body>
   <app-root></app-root>
