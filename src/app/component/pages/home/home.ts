@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { TooltipModule } from 'primeng/tooltip';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 
 @Component({
@@ -25,7 +27,9 @@ import { MessageService } from 'primeng/api';
     TextareaModule, 
     FormsModule,
     FileUploadModule,
-    ToastModule
+    ToastModule,
+    TooltipModule,
+    ProgressBarModule
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -50,8 +54,50 @@ export class Home implements OnInit, AfterViewInit {
   imagePreview: string | null = null;
   isPosting = false;
 
+  // Fun features state
+  quotes = [
+    "Hành trình vạn dặm bắt đầu từ một bước chân.",
+    "Hãy là chính mình, những người khác đã là người khác rồi.",
+    "Thất bại là mẹ của thành công.",
+    "Cuộc sống là 10% những gì xảy ra với bạn và 90% cách bạn phản ứng với nó.",
+    "Đừng đợi cơ hội, hãy tự tạo ra nó.",
+    "Mỗi ngày là một cơ hội mới để viết nên câu chuyện của riêng bạn."
+  ];
+  currentQuote = "";
+  postsReadCount = 0;
+
+  get userLevel(): number {
+    return Math.floor(this.postsReadCount / 10) + 1;
+  }
+
+  get progressToNextLevel(): number {
+    return (this.postsReadCount % 10) * 10;
+  }
+
+  get postsRemainingToNextLevel(): number {
+    return 10 - (this.postsReadCount % 10);
+  }
+
   ngOnInit(): void {
     this.postsState.loadPosts(this.page.toString(), this.limit.toString()).subscribe();
+    this.generateQuote();
+    this.loadStats();
+  }
+
+  generateQuote() {
+    const randomIndex = Math.floor(Math.random() * this.quotes.length);
+    this.currentQuote = this.quotes[randomIndex];
+  }
+
+  loadStats() {
+    // Giả lập lấy số bài đã xem từ localStorage
+    const savedCount = localStorage.getItem('postsReadCount');
+    this.postsReadCount = savedCount ? parseInt(savedCount) : 0;
+  }
+
+  updateStats() {
+    this.postsReadCount++;
+    localStorage.setItem('postsReadCount', this.postsReadCount.toString());
   }
 
   ngAfterViewInit(): void {
@@ -61,6 +107,25 @@ export class Home implements OnInit, AfterViewInit {
       }
     }, { threshold: 0.1 });
     observer.observe(this.bottom.nativeElement);
+
+    // Giả lập đếm bài đã xem khi cuộn qua
+    const postObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          this.updateStats();
+        }
+      });
+    }, { threshold: 0.5 });
+
+    // Đợi bài đăng load xong mới observe
+    this.posts$.subscribe(posts => {
+      if (posts && posts.length > 0) {
+        setTimeout(() => {
+          const postElements = document.querySelectorAll('app-post');
+          postElements.forEach(el => postObserver.observe(el));
+        }, 1000);
+      }
+    });
   }
 
   loadMorePosts() {
@@ -114,6 +179,61 @@ export class Home implements OnInit, AfterViewInit {
   cancelForm(){
     this.resetForm();
     this.displayCreateDialog = false;
+  }
+
+  scrollToNextPost() {
+    const container = document.querySelector('.home-container') as HTMLElement;
+    if (!container) return;
+    
+    const posts = document.querySelectorAll('app-post');
+    const containerRect = container.getBoundingClientRect();
+    
+    // Ngưỡng xác định một bài đăng là "ở trên cùng" (thêm offset 25px để không bị che)
+    const offset = 25;
+    const threshold = containerRect.top + offset + 10;
+    
+    for (let i = 0; i < posts.length; i++) {
+      const postRect = posts[i].getBoundingClientRect();
+      
+      if (postRect.top > threshold) {
+        // Tính toán vị trí cuộn mới: vị trí hiện tại + (khoảng cách từ bài đăng tới container) - offset
+        const targetScrollTop = container.scrollTop + (postRect.top - containerRect.top) - offset;
+        container.scrollTo({
+          top: targetScrollTop,
+          behavior: 'smooth'
+        });
+        return;
+      }
+    }
+    
+    this.bottom.nativeElement.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  scrollToPreviousPost() {
+    const container = document.querySelector('.home-container') as HTMLElement;
+    if (!container) return;
+    
+    const posts = document.querySelectorAll('app-post');
+    const containerRect = container.getBoundingClientRect();
+    
+    const offset = 25;
+    // Ngưỡng xác định một bài đăng là "ở trên cùng" (lùi lại một chút so với offset)
+    const threshold = containerRect.top + offset - 10;
+    
+    for (let i = posts.length - 1; i >= 0; i--) {
+      const postRect = posts[i].getBoundingClientRect();
+      
+      if (postRect.top < threshold) {
+        const targetScrollTop = container.scrollTop + (postRect.top - containerRect.top) - offset;
+        container.scrollTo({
+          top: targetScrollTop,
+          behavior: 'smooth'
+        });
+        return;
+      }
+    }
+    
+    container.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   resetForm() {

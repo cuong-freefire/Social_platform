@@ -106,6 +106,33 @@
     color: var(--p-surface-0) !important;
 }
 
+/* Active state for menu items */
+::ng-deep .p-menubar .p-menuitem-content .active-menuitem {
+    background-color: var(--p-surface-800) !important;
+    color: var(--p-primary-400) !important;
+    position: relative;
+}
+
+::ng-deep .p-menubar .p-menuitem-content .active-menuitem::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 15%;
+    right: 15%;
+    height: 2px;
+    background-color: var(--p-primary-400);
+    border-radius: 2px;
+    box-shadow: 0 0 8px var(--p-primary-400);
+}
+
+::ng-deep .p-menubar .p-menuitem-content .active-menuitem i {
+    color: var(--p-primary-400) !important;
+}
+
+::ng-deep .p-menubar .p-menuitem-content .active-menuitem span {
+    color: var(--p-primary-400) !important;
+}
+
 /* Ẩn các thành phần không cần thiết trên mobile để tối ưu không gian */
 @media screen and (max-width: 768px) {
     ::ng-deep .navbar-search {
