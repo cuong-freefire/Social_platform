@@ -109,22 +109,28 @@ export class FriendDetail implements OnInit, OnChanges {
 
   onAddFriend() {
     this.userApi.sendFriendRequest(this.id).subscribe({
-      next: () => {
+      next: (res: any) => {
+        this.friendshipStatus = 'sent';
+        this.requestId = res._id;
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã gửi lời mời kết bạn' });
-        this.checkFriendshipStatus();
+        this.cdr.detectChanges();
       },
-      error: (err) => this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message })
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.error?.error || 'Không thể gửi lời mời' });
+      }
     });
   }
 
   onUnfriend() {
     this.userApi.unFriend(this.id).subscribe({
-      next: (updatedUser) => {
-        this.userState.setUser(updatedUser);
+      next: () => {
+        this.friendshipStatus = 'none';
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã hủy kết bạn' });
-        this.checkFriendshipStatus();
+        this.cdr.detectChanges();
       },
-      error: (err) => this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message })
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.error?.error || 'Không thể hủy kết bạn' });
+      }
     });
   }
 
@@ -132,12 +138,15 @@ export class FriendDetail implements OnInit, OnChanges {
     if (!this.requestId) return;
     this.userApi.acceptFriendRequest(this.requestId).subscribe({
       next: (res) => {
-        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Các bạn đã trở thành bạn bè!' });
-        this.checkFriendshipStatus();
+        this.friendshipStatus = 'friend';
+        this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã trở thành bạn bè' });
+        this.cdr.detectChanges();
         // Refresh global user state to update friend list
         this.userApi.getUserInfor().subscribe(u => this.userState.setUser(u));
       },
-      error: (err) => this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message })
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.error?.error || 'Không thể chấp nhận lời mời' });
+      }
     });
   }
 

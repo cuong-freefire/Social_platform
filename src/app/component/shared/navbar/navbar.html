@@ -24,15 +24,19 @@
         </ng-template>
 
         <ng-template pTemplate="end">
-            <div class="flex align-items-center gap-3">
+            <div class="flex align-items-center gap-2 sm:gap-3">
+                <!-- Search for Mobile (Icon only) -->
+                <button pButton icon="pi pi-search" class="p-button-rounded p-button-text sm:hidden text-white" (click)="showMobileSearch = !showMobileSearch"></button>
+
                 <p-autoComplete 
                     [(ngModel)]="searchQuery" 
                     [suggestions]="searchResults" 
                     (completeMethod)="onSearch($event)" 
                     (onSelect)="onSelectUser($event)"
                     field="name" 
-                    placeholder="Tìm kiếm người dùng..." 
+                    placeholder="Tìm kiếm..." 
                     styleClass="navbar-search"
+                    [class.mobile-search-active]="showMobileSearch"
                     inputStyleClass="p-inputtext-sm w-15rem"
                     appendTo="body"
                 >

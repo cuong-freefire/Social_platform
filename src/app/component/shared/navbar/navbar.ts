@@ -67,6 +67,7 @@ export class Navbar implements OnInit {
   notifications$ = this.notificationState.notifications$;
   unreadCount$ = this.notificationState.unreadCount$;
   isPopoverVisible = false;
+  showMobileSearch = false;
 
   // Search state
   searchQuery: string = '';
