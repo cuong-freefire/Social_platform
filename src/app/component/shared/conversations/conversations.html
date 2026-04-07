@@ -1,7 +1,8 @@
 <div class="conversations-column border-right-1 surface-border bg-surface-950 flex flex-column h-full">
-    <div class="p-3 border-bottom-1 surface-border bg-surface-900 sticky top-0 z-1">
-        <div class="flex justify-content-between align-items-center mb-3">
-            <h2 class="text-white text-xl font-bold m-0">Đoạn chat</h2>
+    <!-- Header/Search Area -->
+    <div class="p-2 sm:p-3 border-bottom-1 surface-border bg-surface-900 sticky top-0 z-1 search-area">
+        <div class="flex justify-content-between align-items-center mb-2 sm:mb-3">
+            <h2 class="text-white text-base sm:text-xl font-bold m-0">Đoạn chat</h2>
             <button pButton icon="pi pi-users" class="p-button-rounded p-button-text p-button-sm" pTooltip="Tạo nhóm chat" (click)="openCreateGroup()"></button>
         </div>
         <div class="relative">
@@ -10,60 +11,66 @@
                 type="text" 
                 pInputText 
                 [(ngModel)]="searchQuery" 
-                placeholder="Tìm kiếm bạn bè hoặc nhóm..." 
-                class="w-full border-round-3xl bg-surface-800 border-none pl-6 text-sm py-2" 
+                placeholder="Tìm kiếm..." 
+                class="w-full border-round-3xl bg-surface-800 border-none pl-6 text-xs sm:text-sm py-2" 
             />
         </div>
     </div>
 
-    <div class="conversations-list flex-grow-1 overflow-y-auto custom-scrollbar">
-        <!-- Friends not in conversations yet -->
+    <!-- List of Conversations -->
+    <div class="conversations-list flex-grow-1 overflow-y-auto sm:overflow-y-auto custom-scrollbar flex flex-column sm:flex-column md:flex-column">
+        <!-- Friends not in conversations yet (Search Results) -->
         @if (searchQuery.trim() && friendSearchResults.length > 0) {
-            <div class="px-3 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-surface-900">Người bạn mới</div>
-            @for (friend of friendSearchResults; track friend._id) {
-                <div class="conv-item p-3 flex align-items-center gap-3 cursor-pointer hover:bg-surface-800 transition-all border-left-3 border-primary-500"
-                     (click)="onSelect.emit({_id: '', participants: [friend], isGroup: false, createdAt: '', updatedAt: ''})">
-                    <p-avatar [image]="friend.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" shape="circle" size="large"></p-avatar>
-                    <div class="flex flex-column">
-                        <span class="font-bold text-white">{{ friend.name }}</span>
-                        <span class="text-xs text-primary-400">Bắt đầu nhắn tin</span>
-                    </div>
-                </div>
-            }
-        }
-
-        @if (filteredConversations.length > 0) {
-            <div class="px-3 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-surface-900" *ngIf="searchQuery.trim()">Cuộc trò chuyện hiện có</div>
-            @for (conv of filteredConversations; track conv._id) {
-                <div class="conv-item p-3 flex align-items-center gap-3 cursor-pointer hover:bg-surface-800 transition-all"
-                     [class.bg-surface-800]="selectedId === conv._id"
-                     (click)="onSelect.emit(conv)"
-                >
-                    <p-avatar 
-                        [image]="conv.isGroup ? (conv.groupImage || 'https://primefaces.org/cdn/primeng/images/demo/avatar/ionitcu.png') : (getOtherParticipant(conv)?.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png')" 
-                        shape="circle" 
-                        size="large"
-                    ></p-avatar>
-                    <div class="flex flex-column flex-grow-1 overflow-hidden">
-                        <span class="font-bold text-white">{{ conv.isGroup ? conv.groupName : getOtherParticipant(conv)?.name }}</span>
-                        <div class="flex justify-content-between align-items-center">
-                            <span class="text-sm text-gray-400 truncate">
-                                @if (conv.lastMessage) {
-                                    {{ conv.lastMessage.user?._id === currentUserId ? 'Bạn: ' : (conv.isGroup ? (conv.lastMessage.user?.name || 'Người dùng') + ': ' : '') }}
-                                    {{ conv.lastMessage.isDeleted ? 'Tin nhắn đã được thu hồi' : conv.lastMessage.content || 'Đã gửi một ảnh' }}
-                                } @else {
-                                    Bắt đầu cuộc hội thoại
-                                }
-                            </span>
-                            <span class="text-xs text-gray-500 ml-2 flex-shrink-0">{{ conv.updatedAt | date:'HH:mm' }}</span>
+            <div class="px-3 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-surface-900 section-title">Người bạn mới</div>
+            <div class="flex flex-row md:flex-column overflow-x-auto md:overflow-x-visible horizontal-scroll">
+                @for (friend of friendSearchResults; track friend._id) {
+                    <div class="conv-item p-2 sm:p-3 flex flex-column md:flex-row align-items-center gap-2 sm:gap-3 cursor-pointer hover:bg-surface-800 transition-all"
+                         (click)="onSelect.emit({_id: '', participants: [friend], isGroup: false, createdAt: '', updatedAt: ''})">
+                        <p-avatar [image]="friend.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png'" shape="circle" size="large"></p-avatar>
+                        <div class="flex flex-column text-center md:text-left">
+                            <span class="font-bold text-white text-xs sm:text-base truncate-name">{{ friend.name }}</span>
+                            <span class="text-xs text-primary-400 hidden md:block">Bắt đầu</span>
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
+        }
+
+        <!-- Current Conversations -->
+        @if (filteredConversations.length > 0) {
+            <div class="px-3 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-surface-900 section-title" *ngIf="searchQuery.trim()">Hiện có</div>
+            <div class="flex flex-row md:flex-column overflow-x-auto md:overflow-x-visible horizontal-scroll">
+                @for (conv of filteredConversations; track conv._id) {
+                    <div class="conv-item p-2 sm:p-3 flex flex-column md:flex-row align-items-center gap-2 sm:gap-3 cursor-pointer hover:bg-surface-800 transition-all"
+                         [class.bg-surface-800]="selectedId === conv._id"
+                         (click)="onSelect.emit(conv)"
+                    >
+                        <p-avatar 
+                            [image]="conv.isGroup ? (conv.groupImage || 'https://primefaces.org/cdn/primeng/images/demo/avatar/ionitcu.png') : (getOtherParticipant(conv)?.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png')" 
+                            shape="circle" 
+                            size="large"
+                        ></p-avatar>
+                        <div class="flex flex-column flex-grow-1 overflow-hidden text-center md:text-left">
+                            <span class="font-bold text-white text-xs sm:text-base truncate-name">{{ conv.isGroup ? conv.groupName : getOtherParticipant(conv)?.name }}</span>
+                            <div class="hidden md:flex justify-content-between align-items-center">
+                                <span class="text-sm text-gray-400 truncate">
+                                    @if (conv.lastMessage) {
+                                        {{ conv.lastMessage.user?._id === currentUserId ? 'Bạn: ' : (conv.isGroup ? (conv.lastMessage.user?.name || 'Người dùng') + ': ' : '') }}
+                                        {{ conv.lastMessage.isDeleted ? 'Tin nhắn đã được thu hồi' : conv.lastMessage.content || 'Đã gửi một ảnh' }}
+                                    } @else {
+                                        Bắt đầu cuộc hội thoại
+                                    }
+                                </span>
+                                <span class="text-xs text-gray-500 ml-2 flex-shrink-0">{{ conv.updatedAt | date:'HH:mm' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         } @else if (!searchQuery.trim() || friendSearchResults.length === 0) {
-            <div class="p-5 text-center text-gray-500 mt-5">
-                <i class="pi pi-comments text-5xl mb-3 opacity-20"></i>
-                <p>Chưa có cuộc hội thoại nào</p>
+            <div class="p-3 sm:p-5 text-center text-gray-500 mt-2 sm:mt-5">
+                <i class="pi pi-comments text-3xl sm:text-5xl mb-2 sm:mb-3 opacity-20"></i>
+                <p class="text-xs sm:text-base">Chưa có cuộc hội thoại</p>
             </div>
         }
     </div>

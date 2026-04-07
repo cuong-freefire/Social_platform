@@ -31,30 +31,30 @@
     <ng-template pTemplate="footer">
         <div class="flex flex-column gap-3">
             <div class="flex align-items-center justify-content-between pt-2 border-top-1 border-surface-700">
-                <div class="flex gap-2">
+                <div class="flex gap-1 sm:gap-2">
                     <button pButton 
                         [icon]="isLiked() ? 'pi pi-thumbs-up-fill' : 'pi pi-thumbs-up'" 
-                        [label]="isLiked() ? 'Thích' : 'Thích'"
                         [class]="isLiked() ? 'p-button-primary action-btn' : 'p-button-text p-button-secondary action-btn'"
                         (click)="onLike('like')"
                     >
-                        <span class="ml-2 font-medium">{{ post.likes?.length ?? 0 }}</span>
+                        <span class="ml-1 sm:ml-2 font-medium">{{ post.likes?.length ?? 0 }}</span>
                     </button>
                     <button pButton 
                         [icon]="isDisliked() ? 'pi pi-thumbs-down-fill' : 'pi pi-thumbs-down'" 
                         [class]="isDisliked() ? 'p-button-danger action-btn' : 'p-button-text p-button-secondary action-btn'"
                         (click)="onLike('dislike')"
                     >
-                        <span class="ml-2 font-medium">{{ post.dislikes?.length ?? 0 }}</span>
+                        <span class="ml-1 sm:ml-2 font-medium">{{ post.dislikes?.length ?? 0 }}</span>
                     </button>
                 </div>
                 
                 <button pButton 
                     icon="pi pi-comment" 
-                    label="Bình luận" 
                     class="p-button-text p-button-secondary action-btn"
                     (click)="toggleComments()"
-                ></button>
+                >
+                    <span class="ml-1 sm:ml-2 font-medium">Bình luận</span>
+                </button>
             </div>
 
             <!-- Comments Section -->

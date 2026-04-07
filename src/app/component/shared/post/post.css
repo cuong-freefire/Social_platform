@@ -37,10 +37,11 @@
 
 @media screen and (max-width: 768px) {
     ::ng-deep .modern-post-card {
-        border-radius: 0 !important;
-        border-left: none !important;
-        border-right: none !important;
-        margin-bottom: 0.5rem !important;
+        border-radius: 12px !important; /* Giữ bo góc cho đẹp */
+        margin-left: 0.75rem !important;
+        margin-right: 0.75rem !important;
+        margin-bottom: 1rem !important;
+        border: 1px solid var(--p-surface-700) !important;
     }
 
     ::ng-deep .modern-post-card .p-card-header .flex {
@@ -49,12 +50,12 @@
     }
 
     ::ng-deep .modern-post-card .p-card-header p-avatar {
-        width: 2.5rem !important;
-        height: 2.5rem !important;
+        width: 2.25rem !important;
+        height: 2.25rem !important;
     }
 
     ::ng-deep .modern-post-card .p-card-header .text-lg {
-        font-size: 0.95rem !important;
+        font-size: 0.9rem !important;
     }
 
     .post-content {
@@ -71,23 +72,25 @@
     }
 
     .post-content img {
-        max-height: 300px !important;
+        max-height: 250px !important;
     }
 
     ::ng-deep .modern-post-card .p-card-footer {
-        padding: 0.5rem 0.75rem !important;
+        padding: 0.5rem 0.5rem !important;
     }
 
     ::ng-deep .action-btn {
-        padding: 0.4rem 0.25rem !important;
-        font-size: 0.75rem !important;
+        padding: 0.5rem 0.25rem !important;
+        font-size: 0.7rem !important; /* Thu nhỏ chữ để không bị cắt */
+        min-width: 0; /* Cho phép co lại */
+        gap: 0.25rem !important;
     }
 
     ::ng-deep .action-btn i {
-        font-size: 0.9rem !important;
+        font-size: 0.85rem !important;
     }
     
     ::ng-deep .action-btn .ml-2 {
-        margin-left: 0.15rem !important;
+        margin-left: 0 !important;
     }
 }
