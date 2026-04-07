@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 import Conversation from "../models/conversation.js";
 import Message from "../models/Message.js";
 import User from "../models/User.js";
+import Notification from "../models/Notification.js";
 import { uploadToCloudinary } from "./cloudinaryController.js";
+import { userSocketMap } from "../server.js";
 
 export const getConversations = async (req, res) => {
     try {
@@ -114,6 +116,34 @@ export const sendMessage = async (req, res) => {
                 }
             });
 
+        // Emit socket event to all participants
+        const io = req.io;
+        const sender = await User.findById(senderId).select('name');
+        
+        conversation.participants.forEach(async (participantId) => {
+            if (participantId.toString() === senderId.toString()) return;
+
+            const socketId = userSocketMap.get(participantId.toString());
+            if (socketId) {
+                io.to(socketId).emit('newMessage', populatedMessage);
+            }
+
+            // Create notification for the receiver
+            const notification = await new Notification({
+                receiver: participantId,
+                sender: senderId,
+                type: 'NEW_MESSAGE',
+                content: `${sender.name} đã gửi cho bạn một tin nhắn mới`,
+                linkId: senderId, // Sử dụng senderId để frontend có thể mở cuộc trò chuyện
+                onModel: 'User'
+            }).save();
+
+            if (socketId) {
+                const populatedNotif = await Notification.findById(notification._id).populate('sender', 'name image');
+                io.to(socketId).emit('newNotification', populatedNotif);
+            }
+        });
+
         return res.status(200).json(populatedMessage);
     }
     catch (err) {
@@ -178,6 +208,18 @@ export const editMessage = async (req, res) => {
                 }
             });
 
+        // Emit socket event for edited message
+        const io = req.io;
+        const conversation = await Conversation.findById(message.conversation);
+        if (conversation) {
+            conversation.participants.forEach(participantId => {
+                const socketId = userSocketMap.get(participantId.toString());
+                if (socketId) {
+                    io.to(socketId).emit('messageEdited', updatedMessage);
+                }
+            });
+        }
+
         res.status(200).json(updatedMessage);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -200,6 +242,18 @@ export const deleteMessage = async (req, res) => {
         message.isDeleted = true;
         message.imageUrl = null;
         await message.save();
+
+        // Emit socket event for deleted message
+        const io = req.io;
+        const conversation = await Conversation.findById(message.conversation);
+        if (conversation) {
+            conversation.participants.forEach(participantId => {
+                const socketId = userSocketMap.get(participantId.toString());
+                if (socketId) {
+                    io.to(socketId).emit('messageDeleted', { messageId, isDeleted: true, content: message.content });
+                }
+            });
+        }
 
         res.status(200).json({ messageId, isDeleted: true, content: message.content });
     } catch (err) {

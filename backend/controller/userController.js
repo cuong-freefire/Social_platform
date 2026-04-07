@@ -3,6 +3,7 @@ import FriendRequest from "../models/FriendRequest.js";
 import Notification from "../models/Notification.js";
 import cloudinary from "../config/cloudinary.js";
 import { uploadToCloudinary } from "./cloudinaryController.js";
+import { userSocketMap } from "../server.js";
 
 export const getUserInfo = async (req, res) => {
     const id = req.user;
@@ -164,6 +165,14 @@ export const sendFriendRequest = async (req, res) => {
         })
         await notification.save();
 
+        // Emit socket event for friend request notification
+        const io = req.io;
+        const socketId = userSocketMap.get(receiverId.toString());
+        if (socketId) {
+            const populatedNotif = await Notification.findById(notification._id).populate('sender', 'name image');
+            io.to(socketId).emit('newNotification', populatedNotif);
+        }
+
         res.status(200).json("Đã gửi lời mời kết bạn!");
     }
     catch (err) {
@@ -203,12 +212,20 @@ export const acceptFriendRequest = async (req, res) => {
 
         // Tạo thông báo "đã đồng ý kết bạn"
         const senderUser = await User.findById(request.receiver).select('name');
-        await new Notification({
+        const newNotif = await new Notification({
             receiver: request.sender,
             sender: request.receiver,
             content: `${senderUser.name} đã chấp nhận lời mời kết bạn của bạn`,
             type: 'FRIEND_ACCEPT'
         }).save();
+
+        // Emit socket event for friend acceptance notification
+        const io = req.io;
+        const socketId = userSocketMap.get(request.sender.toString());
+        if (socketId) {
+            const populatedNotif = await Notification.findById(newNotif._id).populate('sender', 'name image');
+            io.to(socketId).emit('newNotification', populatedNotif);
+        }
 
         res.status(200).json({ message: "Đã trở thành bạn bè!" });
     }

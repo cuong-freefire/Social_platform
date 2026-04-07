@@ -4,6 +4,7 @@ import Notification from "../models/Notification.js";
 import User from "../models/User.js";
 import { uploadToCloudinary } from "./cloudinaryController.js";
 import mongoose from "mongoose";
+import { userSocketMap } from "../server.js";
 
 //Hàm lấy toàn bộ Post theo page và limit
 export const getPostInfo = async (req, res) => {
@@ -195,7 +196,7 @@ export const toggleLike = async (req, res) => {
                 });
 
                 if (!existingNotif) {
-                    await new Notification({
+                    const newNotif = await new Notification({
                         receiver: post.user,
                         sender: userId,
                         type,
@@ -203,6 +204,14 @@ export const toggleLike = async (req, res) => {
                         linkId: postId,
                         onModel: 'Post'
                     }).save();
+
+                    // Emit socket event for notification
+                    const io = req.io;
+                    const socketId = userSocketMap.get(post.user.toString());
+                    if (socketId) {
+                        const populatedNotif = await Notification.findById(newNotif._id).populate('sender', 'name image');
+                        io.to(socketId).emit('newNotification', populatedNotif);
+                    }
                 }
             }
         }
@@ -248,7 +257,7 @@ export const createComment = async (req, res) => {
             // Trường hợp trả lời bình luận
             const parentComment = await Comment.findById(parentCommentId);
             if (parentComment && parentComment.user.toString() !== userId.toString()) {
-                await new Notification({
+                const newNotif = await new Notification({
                     receiver: parentComment.user,
                     sender: userId,
                     type: 'REPLY',
@@ -256,10 +265,18 @@ export const createComment = async (req, res) => {
                     linkId: postId,
                     onModel: 'Post' // Điều hướng tới bài viết chứa comment đó
                 }).save();
+
+                // Emit socket event for reply notification
+                const io = req.io;
+                const socketId = userSocketMap.get(parentComment.user.toString());
+                if (socketId) {
+                    const populatedNotif = await Notification.findById(newNotif._id).populate('sender', 'name image');
+                    io.to(socketId).emit('newNotification', populatedNotif);
+                }
             }
         } else if (post && post.user.toString() !== userId.toString()) {
             // Trường hợp bình luận bài viết
-            await new Notification({
+            const newNotif = await new Notification({
                 receiver: post.user,
                 sender: userId,
                 type: 'COMMENT',
@@ -267,6 +284,14 @@ export const createComment = async (req, res) => {
                 linkId: postId,
                 onModel: 'Post'
             }).save();
+
+            // Emit socket event for comment notification
+            const io = req.io;
+            const socketId = userSocketMap.get(post.user.toString());
+            if (socketId) {
+                const populatedNotif = await Notification.findById(newNotif._id).populate('sender', 'name image');
+                io.to(socketId).emit('newNotification', populatedNotif);
+            }
         }
 
         const newComment = await Comment.findById(newCommentDoc._id)

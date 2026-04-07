@@ -1,6 +1,7 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, tap, interval, Subscription, startWith, switchMap } from 'rxjs';
 import { NotificationApi } from '../../api_method/notification/notification';
+import { SocketService } from '../../socket/socket.service';
 
 export interface Notification {
   _id: string;
@@ -22,6 +23,7 @@ export interface Notification {
 })
 export class NotificationState implements OnDestroy {
   private notificationApi = inject(NotificationApi);
+  private socketService = inject(SocketService);
   
   private notificationsSubject = new BehaviorSubject<Notification[]>([]);
   notifications$ = this.notificationsSubject.asObservable();
@@ -30,6 +32,19 @@ export class NotificationState implements OnDestroy {
   unreadCount$ = this.unreadCountSubject.asObservable();
 
   private pollingSubscription?: Subscription;
+  private socketSubscription?: Subscription;
+
+  constructor() {
+    this.listenToSocket();
+  }
+
+  private listenToSocket() {
+    this.socketSubscription = this.socketService.onEvent<Notification>('newNotification').subscribe(notif => {
+      const currentNotifs = [notif, ...this.notificationsSubject.value].slice(0, 20);
+      this.notificationsSubject.next(currentNotifs);
+      this.unreadCountSubject.next(this.unreadCountSubject.value + 1);
+    });
+  }
 
   loadNotifications() {
     return this.notificationApi.getNotifications().pipe(
@@ -68,6 +83,9 @@ export class NotificationState implements OnDestroy {
 
   ngOnDestroy() {
     this.stopPolling();
+    if (this.socketSubscription) {
+      this.socketSubscription.unsubscribe();
+    }
   }
 
   markAsRead(id: string) {

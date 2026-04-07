@@ -122,13 +122,20 @@ export class Navbar implements OnInit {
           this.router.navigate(['/friends']);
           break;
         case 'FRIEND_ACCEPT':
-          if (notif.sender && notif.sender._id) {
-            this.router.navigate(['/friend-detail', notif.sender._id]);
-          }
-          break;
-        default:
-          this.router.navigate(['/']);
-      }
+        if (notif.sender && notif.sender._id) {
+          this.router.navigate(['/friend-detail', notif.sender._id]);
+        }
+        break;
+      case 'NEW_MESSAGE':
+        if (notif.linkId) {
+          this.router.navigate(['/chat'], { queryParams: { receiverId: notif.linkId } });
+        } else {
+          this.router.navigate(['/chat']);
+        }
+        break;
+      default:
+        this.router.navigate(['/']);
+    }
     });
   }
 

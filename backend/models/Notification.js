@@ -40,7 +40,7 @@ const notificationSchema = new mongoose.Schema({
         required: function(){
             return this.linkId != null
         },
-        enum: ['Post', 'Conversation', 'Comment']
+        enum: ['Post', 'Conversation', 'Comment', 'User']
     },
     isRead: {
         type: Boolean,

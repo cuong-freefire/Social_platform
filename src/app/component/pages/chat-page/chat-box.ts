@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ViewChild, ElementRef, AfterViewChecked, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -15,6 +15,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PopoverModule } from 'primeng/popover';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription, filter, take } from 'rxjs';
+import { SocketService } from '../../../service/socket/socket.service';
 
 import { Conversations } from '../../shared/conversations/conversations';
 import { MessagesWindow } from '../../shared/messages/messages';
@@ -42,11 +43,15 @@ export class ChatPage implements OnInit, OnDestroy {
   private userState = inject(UserState);
   private conversationState = inject(ConversationState);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private socketService = inject(SocketService);
 
   currentUser$ = this.userState.user$;
   currentUser: User | null = null;
   private userSub?: Subscription;
+  private socketSubs: Subscription[] = [];
+  private resizeListener = () => this.checkMobile();
 
   conversations$ = this.conversationState.conversations$;
   messages: Message[] = [];
@@ -63,7 +68,7 @@ export class ChatPage implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.checkMobile();
-    window.addEventListener('resize', () => this.checkMobile());
+    window.addEventListener('resize', this.resizeListener);
     
     this.userSub = this.currentUser$.subscribe(user => {
       this.currentUser = user;
@@ -91,11 +96,49 @@ export class ChatPage implements OnInit, OnDestroy {
         this.startOrOpenConversation(receiverId);
       }
     });
+
+    this.listenToSocket();
+  }
+
+  private listenToSocket() {
+    // Listen for new messages
+    const newMsgSub = this.socketService.onEvent<Message>('newMessage').subscribe(msg => {
+      // If message belongs to current selected conversation, add it to list
+      if (this.selectedConversation && this.selectedConversation._id === msg.conversation) {
+        // Tránh trùng lặp nếu là tin nhắn chính mình gửi (đã được add manual ở executeSendMessage)
+        if (!this.messages.find(m => m._id === msg._id)) {
+          this.messages = [...this.messages, msg];
+          this.cdr.detectChanges();
+        }
+      }
+      
+      // Always update last message in conversation list
+      this.conversationState.updateLastMessage(msg.conversation, msg);
+    });
+
+    // Listen for edited messages
+    const editMsgSub = this.socketService.onEvent<Message>('messageEdited').subscribe(msg => {
+      if (this.selectedConversation && this.selectedConversation._id === msg.conversation) {
+        this.messages = this.messages.map(m => m._id === msg._id ? msg : m);
+        this.cdr.detectChanges();
+      }
+    });
+
+    // Listen for deleted messages
+    const deleteMsgSub = this.socketService.onEvent<{messageId: string, isDeleted: boolean, content: string}>('messageDeleted').subscribe(data => {
+      this.messages = this.messages.map(m => 
+        m._id === data.messageId ? { ...m, isDeleted: data.isDeleted, content: data.content, imageUrl: undefined } : m
+      );
+      this.cdr.detectChanges();
+    });
+
+    this.socketSubs.push(newMsgSub, editMsgSub, deleteMsgSub);
   }
 
   ngOnDestroy(): void {
     this.userSub?.unsubscribe();
-    window.removeEventListener('resize', () => this.checkMobile());
+    this.socketSubs.forEach(sub => sub.unsubscribe());
+    window.removeEventListener('resize', this.resizeListener);
   }
 
   checkMobile() {

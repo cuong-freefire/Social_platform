@@ -2,6 +2,8 @@ import 'dotenv/config';
 import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import authRouter from './api/auth.js';
 import userRouter from './api/user.js';
 import postRouter from './api/post.js';
@@ -10,12 +12,45 @@ import notificationRouter from './api/notification.js';
 import cookieParser from 'cookie-parser';
 
 const app = express();
+const httpServer = createServer(app);
 
-//Kết nối tới port angular bằng Cors
+// Kết nối tới port angular bằng Cors
 const allowedOrigins = [
     `http://localhost:${process.env.PORT_F}`,
-    'https://social-platform-tc34.onrender.com' // Domain Frontend chính xác của bạn
+    'https://social-platform-tc34.onrender.com'
 ];
+
+const io = new Server(httpServer, {
+    cors: {
+        origin: allowedOrigins,
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
+
+// Map để lưu trữ userId -> socketId
+export const userSocketMap = new Map();
+
+io.on('connection', (socket) => {
+    const userId = socket.handshake.query.userId;
+    if (userId && userId !== 'undefined') {
+        userSocketMap.set(userId, socket.id);
+        console.log(`User ${userId} connected with socket ID ${socket.id}`);
+    }
+
+    socket.on('disconnect', () => {
+        if (userId) {
+            userSocketMap.delete(userId);
+            console.log(`User ${userId} disconnected`);
+        }
+    });
+});
+
+// Middleware để truyền io instance vào req
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
 
 const corsOptions = {
     origin: function (origin, callback) {
@@ -55,7 +90,7 @@ app.use('/notification', notificationRouter);
 
 //Kết nối cổng
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+httpServer.listen(port, () => {
     console.log(`Server is running on port ${port}`);
     console.log(`http://localhost:${port}`);
 })
