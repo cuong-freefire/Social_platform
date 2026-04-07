@@ -1,19 +1,20 @@
 <div class="conversations-column border-right-1 surface-border bg-surface-950 flex flex-column h-full">
     <!-- Header/Search Area -->
-    <div class="p-2 sm:p-3 border-bottom-1 surface-border bg-surface-900 sticky top-0 z-1 search-area">
-        <div class="flex justify-content-between align-items-center mb-2 sm:mb-3">
-            <h2 class="text-white text-base sm:text-xl font-bold m-0">Đoạn chat</h2>
-            <button pButton icon="pi pi-users" class="p-button-rounded p-button-text p-button-sm" pTooltip="Tạo nhóm chat" (click)="openCreateGroup()"></button>
-        </div>
-        <div class="relative">
-            <i class="pi pi-search absolute left-0 top-50 translate-y-minus-50 ml-3 text-gray-500"></i>
-            <input 
-                type="text" 
-                pInputText 
-                [(ngModel)]="searchQuery" 
-                placeholder="Tìm kiếm..." 
-                class="w-full border-round-3xl bg-surface-800 border-none pl-6 text-xs sm:text-sm py-2" 
-            />
+    <div class="p-1 sm:p-3 border-bottom-1 surface-border bg-surface-900 sticky top-0 z-1 search-area">
+        <div class="flex justify-content-between align-items-center mb-1 sm:mb-3">
+            <h2 class="text-white text-xs sm:text-xl font-bold m-0 sm:block hidden">Đoạn chat</h2>
+            <div class="flex-grow-1 relative mr-2 sm:mr-0">
+                <i class="pi pi-search absolute left-0 top-50 translate-y-minus-50 ml-3 text-gray-500"></i>
+                <input 
+                    type="text" 
+                    pInputText 
+                    [(ngModel)]="searchQuery" 
+                    placeholder="Tìm..." 
+                    class="w-full border-round-3xl bg-surface-800 border-none pl-6 text-xs sm:text-sm py-1 sm:py-2" 
+                />
+            </div>
+            <button pButton icon="pi pi-users" class="p-button-rounded p-button-text p-button-sm sm:flex hidden" pTooltip="Tạo nhóm chat" (click)="openCreateGroup()"></button>
+            <button pButton icon="pi pi-plus" class="p-button-rounded p-button-text p-button-sm sm:hidden flex" (click)="openCreateGroup()"></button>
         </div>
     </div>
 

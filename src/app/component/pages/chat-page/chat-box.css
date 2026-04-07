@@ -42,8 +42,8 @@
 
     .conv-section {
         width: 100%;
-        height: auto; /* Dynamic height based on content */
-        max-height: 180px; /* Messenger style top section */
+        height: auto; 
+        max-height: 130px; /* Reduced from 180px to give more space to messages */
         border-right: none;
         border-bottom: 1px solid var(--p-surface-700);
         flex-shrink: 0;
