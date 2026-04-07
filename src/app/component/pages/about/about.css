@@ -1,6 +1,9 @@
 .about-container {
     background: radial-gradient(circle at top right, rgba(168, 85, 247, 0.1), transparent),
                 radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.1), transparent);
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .hero-section {
@@ -18,18 +21,91 @@
 }
 
 .gay-message-container {
-    animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.gay-card-minimal {
+    background: transparent;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
+    flex: 1;
+    max-width: 250px;
+    animation: revealCard 0.6s backwards;
+}
+
+.gay-card-minimal:hover {
+    background: rgba(168, 85, 247, 0.05);
+    border-color: var(--primary-500);
+    transform: translateY(-5px);
+}
+
+.gay-letter {
+    font-size: 3.5rem;
+    font-weight: 900;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--primary-500); /* Màu cơ bản nếu gradient không hoạt động */
+    background: linear-gradient(135deg, #a855f7, #3b82f6); /* Dùng mã màu trực tiếp để đảm bảo hiển thị */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 5px 15px rgba(168, 85, 247, 0.3);
+}
+
+@keyframes revealCard {
+    from { opacity: 0; transform: translateY(30px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Feature section enhancements */
+.feature-card {
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.6));
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 2rem;
+    padding: 2.5rem 1.5rem;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    background: linear-gradient(145deg, rgba(168, 85, 247, 0.1), rgba(30, 41, 59, 0.4));
+    border-color: rgba(168, 85, 247, 0.3);
+    transform: scale(1.02);
+}
+
+.feature-icon-wrapper {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 1.5rem;
+    background: rgba(168, 85, 247, 0.1);
+    border-radius: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon-wrapper {
+    background: var(--primary-500);
+    transform: rotate(10deg);
+}
+
+.feature-card:hover .feature-icon {
+    -webkit-text-fill-color: white;
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .contact-reveal {
     animation: slideInUp 0.5s ease-out;
-}
-
-@keyframes bounceIn {
-    0% { opacity: 0; transform: scale(0.3); }
-    50% { opacity: 1; transform: scale(1.05); }
-    70% { transform: scale(0.9); }
-    100% { transform: scale(1); }
 }
 
 @keyframes slideInUp {
@@ -67,11 +143,22 @@
 }
 
 .letter-circle {
-    transition: transform 0.3s ease;
+    background: transparent !important; /* Bỏ phông nền xanh */
+    box-shadow: none !important;
+    transition: all 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card:hover .letter-circle span {
+    color: #fff !important;
+    text-shadow: 0 0 15px #a855f7, 0 0 25px #3b82f6; /* Hiệu ứng phát sáng khi hover */
+    transform: scale(1.2);
 }
 
 .card:hover .letter-circle {
-    transform: rotateY(180deg);
+    transform: rotate(0deg) !important; /* Bỏ animation cũ xoay vòng */
 }
 
 .feature-icon {

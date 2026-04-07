@@ -1,4 +1,4 @@
-<div class="about-container bg-surface-950 min-h-screen">
+<div class="about-container bg-surface-950 custom-scrollbar">
     <app-navbar></app-navbar>
     
     <div class="content-wrapper p-4 md:p-8 max-w-6xl mx-auto">
@@ -23,18 +23,18 @@
 
             <!-- Animated GAY Message -->
             @if (showGAY) {
-                <div class="gay-message-container mt-8 flex justify-content-center gap-4 px-4">
-                    <div class="bg-surface-800 p-4 border-round-xl shadow-4 border-top-3 border-primary-500 w-full max-w-15rem">
-                        <span class="text-4xl font-bold text-primary-400 block mb-2">G</span>
-                        <span class="text-sm text-gray-300">Gắn kết mọi trái tim qua từng nhịp chat.</span>
+                <div class="gay-message-container">
+                    <div class="gay-card-minimal" style="animation-delay: 0.1s">
+                        <span class="gay-letter">G</span>
+                        <p class="text-sm text-gray-400 m-0 line-height-3 font-medium">Gắn kết mọi trái tim qua từng nhịp chat chân thực.</p>
                     </div>
-                    <div class="bg-surface-800 p-4 border-round-xl shadow-4 border-top-3 border-primary-500 w-full max-w-15rem">
-                        <span class="text-4xl font-bold text-primary-400 block mb-2">A</span>
-                        <span class="text-sm text-gray-300">An tâm chia sẻ, bảo mật tuyệt đối.</span>
+                    <div class="gay-card-minimal" style="animation-delay: 0.2s">
+                        <span class="gay-letter">A</span>
+                        <p class="text-sm text-gray-400 m-0 line-height-3 font-medium">An tâm chia sẻ với hệ thống bảo mật tối tân.</p>
                     </div>
-                    <div class="bg-surface-800 p-4 border-round-xl shadow-4 border-top-3 border-primary-500 w-full max-w-15rem">
-                        <span class="text-4xl font-bold text-primary-400 block mb-2">Y</span>
-                        <span class="text-sm text-gray-300">Yêu thương lan tỏa trong từng thông điệp.</span>
+                    <div class="gay-card-minimal" style="animation-delay: 0.3s">
+                        <span class="gay-letter">Y</span>
+                        <p class="text-sm text-gray-400 m-0 line-height-3 font-medium">Yêu thương lan tỏa trong từng thông điệp gửi đi.</p>
                     </div>
                 </div>
             }
@@ -96,13 +96,13 @@
         </div>
 
         <!-- Values Section -->
-        <div class="grid gap-4 mb-8">
+        <div class="flex flex-row justify-content-center gap-4 mb-8">
             <!-- G - Generosity -->
-            <div class="col-12 md:col-4">
+            <div class="flex-1 max-w-20rem">
                 <div class="card p-6 border-round-3xl bg-surface-900 h-full shadow-4 flex flex-column align-items-center relative overflow-hidden">
                     <div class="absolute -top-4 -right-4 w-24 h-24 bg-primary-500 opacity-5 border-round-circle"></div>
-                    <div class="letter-circle w-20 h-20 border-round-circle bg-primary-900 flex align-items-center justify-content-center mb-6 shadow-8">
-                        <span class="text-5xl font-bold text-primary-400">G</span>
+                    <div class="letter-circle w-20 h-20 mb-6">
+                        <span class="text-7xl font-bold text-primary-500 transition-all">G</span>
                     </div>
                     <h3 class="text-2xl font-bold text-white text-center mb-4">Gắn kết</h3>
                     <p class="text-gray-400 text-center line-height-4 text-lg">
@@ -112,11 +112,11 @@
             </div>
 
             <!-- A - Authenticity -->
-            <div class="col-12 md:col-4">
+            <div class="flex-1 max-w-20rem">
                 <div class="card p-6 border-round-3xl bg-surface-900 h-full shadow-4 flex flex-column align-items-center relative overflow-hidden">
                     <div class="absolute -top-4 -right-4 w-24 h-24 bg-primary-500 opacity-5 border-round-circle"></div>
-                    <div class="letter-circle w-20 h-20 border-round-circle bg-primary-900 flex align-items-center justify-content-center mb-6 shadow-8">
-                        <span class="text-5xl font-bold text-primary-400">A</span>
+                    <div class="letter-circle w-20 h-20 mb-6">
+                        <span class="text-7xl font-bold text-primary-500 transition-all">A</span>
                     </div>
                     <h3 class="text-2xl font-bold text-white text-center mb-4">An tâm</h3>
                     <p class="text-gray-400 text-center line-height-4 text-lg">
@@ -126,11 +126,11 @@
             </div>
 
             <!-- Y - Youthfulness -->
-            <div class="col-12 md:col-4">
+            <div class="flex-1 max-w-20rem">
                 <div class="card p-6 border-round-3xl bg-surface-900 h-full shadow-4 flex flex-column align-items-center relative overflow-hidden">
                     <div class="absolute -top-4 -right-4 w-24 h-24 bg-primary-500 opacity-5 border-round-circle"></div>
-                    <div class="letter-circle w-20 h-20 border-round-circle bg-primary-900 flex align-items-center justify-content-center mb-6 shadow-8">
-                        <span class="text-5xl font-bold text-primary-400">Y</span>
+                    <div class="letter-circle w-20 h-20 mb-6">
+                        <span class="text-7xl font-bold text-primary-500 transition-all">Y</span>
                     </div>
                     <h3 class="text-2xl font-bold text-white text-center mb-4">Yêu thương</h3>
                     <p class="text-gray-400 text-center line-height-4 text-lg">
@@ -141,15 +141,17 @@
         </div>
 
         <!-- Features Grid -->
-        <div class="features-section py-8">
-            <h2 class="text-4xl font-bold text-white text-center mb-8">Tại sao chọn chúng tôi?</h2>
-            <div class="grid">
+        <div class="features-section py-8 mt-8">
+            <h2 class="text-5xl font-bold text-white text-center mb-8">Tại sao chọn chúng tôi?</h2>
+            <div class="grid gap-4 justify-content-center">
                 @for (feature of features; track feature.title) {
                     <div class="col-12 sm:col-6 lg:col-3">
-                        <div class="p-4 text-center">
-                            <i [class]="feature.icon + ' feature-icon mb-4'"></i>
-                            <h4 class="text-xl font-bold text-white mb-2">{{ feature.title }}</h4>
-                            <p class="text-gray-500 line-height-3">{{ feature.desc }}</p>
+                        <div class="feature-card text-center">
+                            <div class="feature-icon-wrapper">
+                                <i [class]="feature.icon + ' feature-icon text-3xl'"></i>
+                            </div>
+                            <h4 class="text-2xl font-bold text-white mb-3">{{ feature.title }}</h4>
+                            <p class="text-gray-500 line-height-4 text-sm font-medium">{{ feature.desc }}</p>
                         </div>
                     </div>
                 }
