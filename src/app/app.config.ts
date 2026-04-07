@@ -13,7 +13,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()), provideClientHydration(withEventReplay()),
     providePrimeNG({
       theme: {
-        preset: Aura
+        preset: Aura,
+        options: {
+          darkModeSelector: '.my-app-dark'
+        }
       }
     }),
     provideHttpClient(withInterceptors([authInterceptor])),

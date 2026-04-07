@@ -4,8 +4,15 @@
 body {
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Prevent body scroll if we handle it in pages */
+    overflow-x: hidden;
     height: 100vh;
+    background-color: var(--p-surface-950);
+    color: var(--p-surface-0);
+}
+
+.my-app-dark {
+    background-color: var(--p-surface-950);
+    color: var(--p-surface-0);
 }
 
 /* Global scrollbar style */

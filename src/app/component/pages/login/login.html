@@ -1,8 +1,9 @@
-<div class="flex align-items-center justify-content-center h-screen surface-ground">
+<div class="flex align-items-center justify-content-center h-screen" style="background-color: var(--p-surface-950);">
     <p-toast />
 
     <form [formGroup]="loginForm" (ngSubmit)="login()"
-        class="surface-card p-5 shadow-3 border-round w-23rem h-25rem flex flex-column gap-4 border-1 border-primary-500">
+        class="p-4 sm:p-5 shadow-3 border-round w-full sm:w-25rem mx-3 flex flex-column gap-4 border-1"
+        style="background-color: var(--p-surface-900); border-color: var(--p-primary-500);">
 
         <h2 class="text-center m-0">Đăng nhập</h2>
 
