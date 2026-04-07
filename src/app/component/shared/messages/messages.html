@@ -140,9 +140,10 @@
                        [disabled]="isSending"
                        (keyup.enter)="handleSend()"/>
                 <button pButton 
-                        [icon]="isSending ? 'pi pi-spin pi-spinner' : 'pi pi-send'" 
+                        icon="pi pi-send"
+                        [loading]="isSending" 
                         class="p-button-rounded" 
-                        [disabled]="(!newMessage?.trim() && !selectedFile) || isSending" 
+                        [disabled]="!newMessage?.trim() && !selectedFile" 
                         (click)="handleSend()"></button>
             </div>
         </div>

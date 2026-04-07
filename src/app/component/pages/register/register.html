@@ -43,9 +43,8 @@
         </p-iftalabel>
 
         <p-button type="submit" 
-            [label]="isRegistering ? 'Đang đăng ký...' : 'Đăng ký'" 
-            [icon]="isRegistering ? 'pi pi-spin pi-spinner' : ''"
-            [disabled]="isRegistering"
+            label="Đăng ký" 
+            [loading]="isRegistering"
             styleClass="w-full p-3">
         </p-button>
 

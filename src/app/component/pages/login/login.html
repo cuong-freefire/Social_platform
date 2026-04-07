@@ -20,9 +20,8 @@
         </p-iftalabel>
 
         <p-button type="submit" 
-            [label]="isLoggingIn ? 'Đang đăng nhập...' : 'Đăng nhập'" 
-            [icon]="isLoggingIn ? 'pi pi-spin pi-spinner' : ''"
-            [disabled]="isLoggingIn"
+            label="Đăng nhập" 
+            [loading]="isLoggingIn"
             styleClass="w-full p-3">
         </p-button>
 

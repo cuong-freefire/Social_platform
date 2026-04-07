@@ -84,10 +84,10 @@
         <div class="flex justify-content-end gap-2">
             <button pButton label="Hủy" class="p-button-text p-button-secondary" (click)="cancelForm()" [disabled]="isPosting"></button>
             <button pButton 
-                [label]="isPosting ? 'Đang đăng...' : 'Đăng bài'" 
-                [icon]="isPosting ? 'pi pi-spin pi-spinner' : 'pi pi-check'" 
+                label="Đăng bài" 
+                [loading]="isPosting" 
                 class="p-button-primary p-button-rounded px-4"
-                [disabled]="!newPostTitle.trim() || !newPostContent.trim() || isPosting"
+                [disabled]="!newPostTitle.trim() || !newPostContent.trim()"
                 (click)="submitPost()"
             ></button>
         </div>

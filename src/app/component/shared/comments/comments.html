@@ -33,10 +33,10 @@
                 <div class="flex justify-content-end">
                     <button 
                         pButton 
-                        [label]="isSubmitting ? 'Đang gửi...' : 'Gửi'" 
-                        [icon]="isSubmitting ? 'pi pi-spin pi-spinner' : 'pi pi-send'" 
+                        label="Gửi" 
+                        [loading]="isSubmitting" 
                         class="p-button-sm p-button-primary p-button-rounded"
-                        [disabled]="!newCommentContent.trim() || isSubmitting"
+                        [disabled]="!newCommentContent.trim()"
                         (click)="submitComment()"
                     ></button>
                 </div>
@@ -108,9 +108,10 @@
                         ></textarea>
                         <button 
                             pButton 
-                            [icon]="isReplying ? 'pi pi-spin pi-spinner' : 'pi pi-send'" 
+                            icon="pi pi-send"
+                            [loading]="isReplying" 
                             class="p-button-sm p-button-primary p-button-rounded"
-                            [disabled]="!replyContent.trim() || isReplying"
+                            [disabled]="!replyContent.trim()"
                             (click)="submitReply(comment._id)"
                         ></button>
                     </div>
