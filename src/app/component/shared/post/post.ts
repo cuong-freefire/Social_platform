@@ -47,7 +47,7 @@ export class Post implements OnInit {
   isDeleting = false;
   isLiking = false;
   isExpanded = false;
-  readonly CONTENT_THRESHOLD = 300; // Số ký tự tối đa trước khi ẩn
+  readonly CONTENT_THRESHOLD = 200; // Giảm ngưỡng xuống để dễ test và cân đối hơn
 
   ngOnInit(): void {
     this.user$.subscribe((user) => {
@@ -137,14 +137,17 @@ export class Post implements OnInit {
 
   get displayedContent(): string {
     if (!this.post?.content) return '';
-    if (this.isExpanded || this.post.content.length <= this.CONTENT_THRESHOLD) {
+    if (this.isExpanded || !this.shouldShowSeeMore) {
       return this.post.content;
     }
     return this.post.content.substring(0, this.CONTENT_THRESHOLD) + '...';
   }
 
   get shouldShowSeeMore(): boolean {
-    return (this.post?.content?.length ?? 0) > this.CONTENT_THRESHOLD;
+    if (!this.post?.content) return false;
+    // Hiện nút nếu quá ký tự HOẶC có quá nhiều dấu xuống dòng (tránh post quá dài về chiều dọc)
+    const lineBreaks = (this.post.content.match(/\n/g) || []).length;
+    return this.post.content.length > this.CONTENT_THRESHOLD || lineBreaks > 4;
   }
 
   toggleExpand() {

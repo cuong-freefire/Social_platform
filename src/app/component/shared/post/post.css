@@ -84,6 +84,7 @@
 
     .post-content p {
         font-size: 0.9rem !important;
+        white-space: pre-wrap !important; /* Đảm bảo xuống dòng trên mobile */
     }
 
     .post-content img {
