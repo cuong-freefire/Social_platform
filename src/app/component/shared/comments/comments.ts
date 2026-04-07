@@ -155,18 +155,18 @@ export class Comments implements AfterViewInit, OnInit {
     if (!this.newCommentContent.trim() || this.isSubmitting) return;
     
     this.isSubmitting = true;
+    this.cdr.detectChanges(); // Cập nhật UI ngay lập tức để hiện loading
+
     this.postApiService.createComment(this.postId, this.newCommentContent).subscribe({
       next: (comment) => {
         const currentFlat = this.getAllCommentsFlat(this.commentsSubject.value);
-        // Khi thêm comment mới ở "Oldest First", nó là cái mới nhất nên phải ở cuối cùng của danh sách hiện tại
         const updatedFlat = [...currentFlat, comment];
         this.commentsSubject.next(this.buildCommentTree(updatedFlat));
         this.newCommentContent = '';
-        this.onCommentChange.emit(1); // Increment count
+        this.onCommentChange.emit(1); 
         this.isSubmitting = false;
         this.cdr.detectChanges();
         
-        // Tự động cuộn xuống cuối sau khi bình luận
         setTimeout(() => {
           this.scrollToBottom();
         }, 100);
@@ -184,12 +184,14 @@ export class Comments implements AfterViewInit, OnInit {
       this.bottom.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   }
-  
+
   //6. Hàm tạo comment khi trả lời 1 comment khác.
   submitReply(parentCommentId: string) {
     if (!this.replyContent.trim() || this.isReplying) return;
 
     this.isReplying = true;
+    this.cdr.detectChanges(); // Cập nhật UI ngay lập tức
+
     this.postApiService.createComment(this.postId, this.replyContent, parentCommentId).subscribe({
       next: (reply) => {
         const currentFlat = this.getAllCommentsFlat(this.commentsSubject.value);
@@ -197,7 +199,7 @@ export class Comments implements AfterViewInit, OnInit {
         this.commentsSubject.next(this.buildCommentTree(updatedFlat));
         this.replyContent = '';
         this.replyingTo = null;
-        this.onCommentChange.emit(1); // Increment count
+        this.onCommentChange.emit(1); 
         this.isReplying = false;
         this.cdr.detectChanges();
       },

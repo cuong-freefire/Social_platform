@@ -44,6 +44,7 @@ export class FriendDetail implements OnInit, OnChanges {
   friendshipStatus: 'friend' | 'sent' | 'received' | 'none' | 'self' = 'none';
   requestId?: string;
   isLoadingPosts = false;
+  isActionLoading = false;
 
   ngOnInit(): void {
     if (!this.id) {
@@ -108,44 +109,64 @@ export class FriendDetail implements OnInit, OnChanges {
   }
 
   onAddFriend() {
+    if (this.isActionLoading) return;
+    this.isActionLoading = true;
+    this.cdr.detectChanges();
+
     this.userApi.sendFriendRequest(this.id).subscribe({
       next: (res: any) => {
         this.friendshipStatus = 'sent';
         this.requestId = res._id;
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã gửi lời mời kết bạn' });
+        this.isActionLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
+        this.isActionLoading = false;
         this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.error?.error || 'Không thể gửi lời mời' });
+        this.cdr.detectChanges();
       }
     });
   }
 
   onUnfriend() {
+    if (this.isActionLoading) return;
+    this.isActionLoading = true;
+    this.cdr.detectChanges();
+
     this.userApi.unFriend(this.id).subscribe({
       next: () => {
         this.friendshipStatus = 'none';
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã hủy kết bạn' });
+        this.isActionLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
+        this.isActionLoading = false;
         this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.error?.error || 'Không thể hủy kết bạn' });
+        this.cdr.detectChanges();
       }
     });
   }
 
   onAcceptRequest() {
-    if (!this.requestId) return;
+    if (!this.requestId || this.isActionLoading) return;
+    this.isActionLoading = true;
+    this.cdr.detectChanges();
+
     this.userApi.acceptFriendRequest(this.requestId).subscribe({
       next: (res) => {
         this.friendshipStatus = 'friend';
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã trở thành bạn bè' });
+        this.isActionLoading = false;
         this.cdr.detectChanges();
         // Refresh global user state to update friend list
         this.userApi.getUserInfor().subscribe(u => this.userState.setUser(u));
       },
       error: (err) => {
+        this.isActionLoading = false;
         this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.error?.error || 'Không thể chấp nhận lời mời' });
+        this.cdr.detectChanges();
       }
     });
   }

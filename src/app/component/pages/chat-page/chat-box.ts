@@ -151,6 +151,8 @@ export class ChatPage implements OnInit, OnDestroy {
     if (!this.selectedConversation || !this.currentUser || this.isSendingMessage) return;
 
     this.isSendingMessage = true;
+    this.cdr.detectChanges(); // Hiện loading ngay lập tức
+
     if (!this.selectedConversation._id) {
       const receiver = this.selectedConversation.participants[0];
       this.chatApi.getOrCreateConversation(receiver._id).subscribe({

@@ -45,6 +45,7 @@ export class Post implements OnInit {
   user!: User | null;
 
   isDeleting = false;
+  isLiking = false;
 
   ngOnInit(): void {
     this.user$.subscribe((user) => {
@@ -68,13 +69,17 @@ export class Post implements OnInit {
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.isDeleting = true;
+        this.cdr.detectChanges();
+
         this.postsState.deletePost(this.post._id).subscribe({
           next: () => {
             this.isDeleting = false;
+            this.cdr.detectChanges();
             this.messageService.add({ severity: 'success', summary: 'Thành công', detail: 'Đã xóa bài viết' });
           },
           error: (err) => {
             this.isDeleting = false;
+            this.cdr.detectChanges();
             this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message });
           }
         });
@@ -97,13 +102,21 @@ export class Post implements OnInit {
   }
 
   onLike(action: 'like' | 'dislike') {
+    if (this.isLiking) return;
+    
+    this.isLiking = true;
+    this.cdr.detectChanges();
+
     this.postsState.likepost(this.post._id, action).subscribe({
       next: (updatedPost) => {
         this.post = updatedPost;
+        this.isLiking = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
+        this.isLiking = false;
         this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message });
+        this.cdr.detectChanges();
       }
     })
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Navbar } from '../../shared/navbar/navbar';
 import { PostsState } from '../../../service/state/posts_state/posts-state';
 import { CommonModule } from '@angular/common';
@@ -34,6 +34,7 @@ import { MessageService } from 'primeng/api';
 export class Home implements OnInit, AfterViewInit {
   private postsState = inject(PostsState);
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
   posts$ = this.postsState.posts$;
 
   @ViewChild('bottom') bottom!: ElementRef;
@@ -87,6 +88,8 @@ export class Home implements OnInit, AfterViewInit {
     if (!this.newPostTitle.trim() || !this.newPostContent.trim() || this.isPosting) return;
 
     this.isPosting = true;
+    this.cdr.detectChanges(); // Hiện loading ngay lập tức
+
     const formData = new FormData();
     formData.append('title', this.newPostTitle);
     formData.append('content', this.newPostContent);

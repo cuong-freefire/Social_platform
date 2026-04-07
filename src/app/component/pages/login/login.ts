@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -29,6 +29,9 @@ export class Login implements OnInit {
   private route = inject(ActivatedRoute);
   private auth = inject(Auth);
   private userState = inject(UserState);
+  private cdr = inject(ChangeDetectorRef);
+
+  isLoggingIn = false;
 
   ngOnInit(): void {
     // Nếu đã đăng nhập thì tự động chuyển về trang chủ
@@ -75,19 +78,24 @@ export class Login implements OnInit {
   })
 
   login() {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
+    if (this.loginForm.invalid || this.isLoggingIn) {
+      if (this.loginForm.invalid) {
+        this.loginForm.markAllAsTouched();
 
-      if (this.loginForm.get('username')?.invalid) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Username is required' });
-        return
-      }
-      if (this.loginForm.get('password')?.invalid) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'password is required' });
-        return
+        if (this.loginForm.get('username')?.invalid) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Username is required' });
+          return
+        }
+        if (this.loginForm.get('password')?.invalid) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'password is required' });
+          return
+        }
       }
       return
     }
+
+    this.isLoggingIn = true;
+    this.cdr.detectChanges();
 
     this.auth.login(this.loginForm.value).pipe(
       tap(() => console.log("Đăng nhập thành công")),
@@ -96,9 +104,12 @@ export class Login implements OnInit {
       .subscribe({
         next: (res: any) => {
           console.log(res);
+          this.isLoggingIn = false;
           this.router.navigate(['/'], { replaceUrl: true });
         },
         error: (err) => {
+          this.isLoggingIn = false;
+          this.cdr.detectChanges();
           return this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
         }
       })

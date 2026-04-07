@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule, ValidatorFn, ReactiveFormsModule, FormGroup, FormControl, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -23,7 +23,10 @@ export class Register {
   private messageService = inject(MessageService);
   private http = inject(HttpClient);
   private authService = inject(Auth);
+  private cdr = inject(ChangeDetectorRef);
   private strongRegex: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  isRegistering = false;
 
   registerForm = new FormGroup({
     username: new FormControl('',
@@ -133,35 +136,43 @@ export class Register {
 
   onRegister() {
     // Viết check để ném lỗi
-    if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
+    if (this.registerForm.invalid || this.isRegistering) {
+      if (this.registerForm.invalid) {
+        this.registerForm.markAllAsTouched();
 
-      //Check form 
-      const formError = this.getFormError();
-      if (formError) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: formError });
-        return
-      }
-
-      // Check field
-      const fields = ['username', 'password', 'email', 'name'];
-      for (const field of fields) {
-        const errorMsg = this.getErrorMessage(field);
-        if (errorMsg) {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: errorMsg });
+        //Check form 
+        const formError = this.getFormError();
+        if (formError) {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: formError });
           return
+        }
+
+        // Check field
+        const fields = ['username', 'password', 'email', 'name'];
+        for (const field of fields) {
+          const errorMsg = this.getErrorMessage(field);
+          if (errorMsg) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: errorMsg });
+            return
+          }
         }
       }
       return
     }
 
+    this.isRegistering = true;
+    this.cdr.detectChanges();
+
     this.authService.register(this.registerForm.value).subscribe(
       {
         next: (res: any) => {
           console.log(res);
+          this.isRegistering = false;
           this.router.navigate(['/login'], { queryParams: { registered: true } });
         },
         error: (err) => {
+          this.isRegistering = false;
+          this.cdr.detectChanges();
           this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
         }
       }

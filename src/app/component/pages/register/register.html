@@ -42,7 +42,11 @@
             <label for="name">Name</label>
         </p-iftalabel>
 
-        <p-button type="submit" label="Register" styleClass="w-full p-3">
+        <p-button type="submit" 
+            [label]="isRegistering ? 'Đang đăng ký...' : 'Đăng ký'" 
+            [icon]="isRegistering ? 'pi pi-spin pi-spinner' : ''"
+            [disabled]="isRegistering"
+            styleClass="w-full p-3">
         </p-button>
 
         <a routerLink="/login" class="text-center">Đăng nhập</a>
