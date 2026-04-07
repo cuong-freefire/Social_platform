@@ -43,24 +43,51 @@
         margin-bottom: 0.5rem !important;
     }
 
-    .post-content h3 {
-        font-size: 1.1rem !important;
+    ::ng-deep .modern-post-card .p-card-header .flex {
+        padding: 0.75rem !important;
+        gap: 0.75rem !important;
     }
 
-    .post-content p {
+    ::ng-deep .modern-post-card .p-card-header p-avatar {
+        width: 2.5rem !important;
+        height: 2.5rem !important;
+    }
+
+    ::ng-deep .modern-post-card .p-card-header .text-lg {
         font-size: 0.95rem !important;
     }
 
+    .post-content {
+        padding: 0.75rem !important;
+    }
+
+    .post-content h3 {
+        font-size: 1rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    .post-content p {
+        font-size: 0.9rem !important;
+    }
+
+    .post-content img {
+        max-height: 300px !important;
+    }
+
+    ::ng-deep .modern-post-card .p-card-footer {
+        padding: 0.5rem 0.75rem !important;
+    }
+
     ::ng-deep .action-btn {
-        padding: 0.5rem 0.4rem !important;
-        font-size: 0.8rem !important;
+        padding: 0.4rem 0.25rem !important;
+        font-size: 0.75rem !important;
     }
 
     ::ng-deep .action-btn i {
-        font-size: 1rem !important;
+        font-size: 0.9rem !important;
     }
     
     ::ng-deep .action-btn .ml-2 {
-        margin-left: 0.25rem !important;
+        margin-left: 0.15rem !important;
     }
 }

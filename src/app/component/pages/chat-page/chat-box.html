@@ -1,30 +1,18 @@
 <div class="chat-page-container flex flex-column">
-    <app-navbar class="flex-shrink-0" [class.hidden]="isMobile && !showConversationList"></app-navbar>
-    <div class="chat-layout flex-grow-1 relative">
-        <!-- Nút quay lại trên mobile khi đang ở trong chat -->
-        @if (isMobile && !showConversationList) {
-            <button pButton 
-                icon="pi pi-arrow-left" 
-                class="p-button-rounded p-button-text p-button-plain absolute z-5 top-0 left-0 m-2"
-                style="color: white; background: rgba(0,0,0,0.3);"
-                (click)="backToList()"
-            ></button>
-        }
-
-        <!-- Left Column: Conversation List -->
+    <app-navbar class="flex-shrink-0"></app-navbar>
+    <div class="chat-layout flex flex-column md:flex-row flex-grow-1 overflow-hidden">
+        <!-- Left/Top Column: Conversation List -->
         <app-conversations
-            *ngIf="!isMobile || showConversationList"
             [conversations]="(conversations$ | async) || []"
             [selectedId]="selectedConversation?._id"
             [currentUserId]="currentUser?._id"
             (onSelect)="selectConversation($event)"
             (onCreateGroup)="createGroup($event)"
-            [class.w-full]="isMobile"
+            class="conv-section"
         ></app-conversations>
 
-        <!-- Right Column: Messages Window -->
+        <!-- Right/Bottom Column: Messages Window -->
         <app-messages
-            *ngIf="!isMobile || !showConversationList"
             [selectedConversation]="selectedConversation"
             [messages]="messages"
             [currentUserId]="currentUser?._id"
@@ -43,7 +31,7 @@
             (onAddMembers)="addMembers($event)"
             (onLeaveGroup)="leaveGroup($event)"
             (onDissolveGroup)="dissolveGroup()"
-            [class.w-full]="isMobile"
+            class="msg-section"
         ></app-messages>
     </div>
 </div>

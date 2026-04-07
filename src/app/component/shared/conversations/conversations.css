@@ -1,5 +1,5 @@
 .conversations-column {
-    width: 360px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -12,6 +12,27 @@
 .conv-item {
     border-radius: 8px;
     margin: 4px 8px;
+}
+
+@media screen and (max-width: 768px) {
+    .conversations-column > div:first-child {
+        padding: 0.5rem !important;
+    }
+
+    .conversations-column h2 {
+        font-size: 1rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .conv-item {
+        padding: 0.5rem !important;
+        margin: 2px 4px !important;
+    }
+
+    p-avatar {
+        transform: scale(0.8);
+        transform-origin: center;
+    }
 }
 
 .truncate {
