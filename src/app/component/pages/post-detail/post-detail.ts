@@ -47,10 +47,12 @@ export class PostDetail implements OnInit {
       next: (post) => {
         this.post = post;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = err.message;
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }

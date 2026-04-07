@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, NgZone } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MenubarModule } from 'primeng/menubar';
 import { MenuItem } from 'primeng/api';
@@ -63,6 +63,7 @@ export class Navbar implements OnInit {
   private authApi = inject(Auth);
   private userApi = inject(UserApi);
   private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
   user$ = this.userInfoState.user$;
   notifications$ = this.notificationState.notifications$;
   unreadCount$ = this.notificationState.unreadCount$;
@@ -106,27 +107,29 @@ export class Navbar implements OnInit {
       this.notificationState.markAsRead(notif._id).subscribe();
     }
 
-    // Điều hướng dựa trên loại thông báo
-    switch (notif.type) {
-      case 'LIKE_POST':
-      case 'DISLIKE_POST':
-      case 'COMMENT':
-      case 'REPLY':
-        if (notif.linkId) {
-          this.router.navigate(['/post', notif.linkId]);
-        }
-        break;
-      case 'FRIEND_REQUEST':
-        this.router.navigate(['/friends']);
-        break;
-      case 'FRIEND_ACCEPT':
-        if (notif.sender && notif.sender._id) {
-          this.router.navigate(['/friend-detail', notif.sender._id]);
-        }
-        break;
-      default:
-        this.router.navigate(['/']);
-    }
+    this.ngZone.run(() => {
+      // Điều hướng dựa trên loại thông báo
+      switch (notif.type) {
+        case 'LIKE_POST':
+        case 'DISLIKE_POST':
+        case 'COMMENT':
+        case 'REPLY':
+          if (notif.linkId) {
+            this.router.navigate(['/post', notif.linkId]);
+          }
+          break;
+        case 'FRIEND_REQUEST':
+          this.router.navigate(['/friends']);
+          break;
+        case 'FRIEND_ACCEPT':
+          if (notif.sender && notif.sender._id) {
+            this.router.navigate(['/friend-detail', notif.sender._id]);
+          }
+          break;
+        default:
+          this.router.navigate(['/']);
+      }
+    });
   }
 
   markAllAsRead() {
