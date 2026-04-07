@@ -20,7 +20,13 @@ export const getPostInfo = async (req, res) => {
             .populate("likes", "name image")
             .populate("dislikes", "name image")
             .skip((page - 1) * limit).limit(limit);
-        res.status(200).json(posts);
+
+        const postsWithCommentCount = await Promise.all(posts.map(async (post) => {
+            const commentCount = await Comment.countDocuments({ post: post._id });
+            return { ...post.toObject(), commentCount };
+        }));
+
+        res.status(200).json(postsWithCommentCount);
     }
     catch (err) {
         console.log(err);
@@ -44,7 +50,9 @@ export const getPostById = async (req, res) => {
         if (!post) {
             return res.status(404).json({ error: "Không tìm thấy bài viết" });
         }
-        res.status(200).json(post);
+
+        const commentCount = await Comment.countDocuments({ post: post._id });
+        res.status(200).json({ ...post.toObject(), commentCount });
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: "Lỗi khi lấy thông tin bài viết" });

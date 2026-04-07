@@ -111,4 +111,11 @@ export class Post implements OnInit {
     this.showComments = !this.showComments;
     this.cdr.detectChanges();
   }
+
+  updateCommentCount(change: number) {
+    if (this.post) {
+      this.post.commentCount = (this.post.commentCount ?? 0) + change;
+      this.cdr.detectChanges();
+    }
+  }
 }

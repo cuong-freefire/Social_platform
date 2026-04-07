@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, inject, Input, ViewChild, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, inject, Input, ViewChild, OnInit, Output, EventEmitter } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { UserState } from '../../../service/state/user_state/user-state';
 import { Comment } from '../../../interface/comment';
@@ -33,6 +33,7 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class Comments implements AfterViewInit, OnInit {
   @Input() postId!: string;
+  @Output() onCommentChange = new EventEmitter<number>();
   @ViewChild('bottom') bottom!: ElementRef;
 
   private postApiService = inject(PostApi);
@@ -157,6 +158,7 @@ export class Comments implements AfterViewInit, OnInit {
         const updatedFlat = [...currentFlat, comment];
         this.commentsSubject.next(this.buildCommentTree(updatedFlat));
         this.newCommentContent = '';
+        this.onCommentChange.emit(1); // Increment count
         this.cdr.detectChanges();
         
         // Tự động cuộn xuống cuối sau khi bình luận
@@ -183,6 +185,7 @@ export class Comments implements AfterViewInit, OnInit {
         this.commentsSubject.next(this.buildCommentTree(updatedFlat));
         this.replyContent = '';
         this.replyingTo = null;
+        this.onCommentChange.emit(1); // Increment count
         this.cdr.detectChanges();
       }
     })
@@ -203,6 +206,8 @@ export class Comments implements AfterViewInit, OnInit {
         );
         this.commentsSubject.next(this.buildCommentTree(updatedFlat));
         this.messageService.add({ severity: 'success', summary: 'Thành công', detail: res });
+        // Optional: you might not want to decrement count if "isDeleted" but still exists.
+        // But for UI clarity, maybe decrement. Let's not decrement for now as the comment still exists as "withdrawn".
         this.cdr.detectChanges();
       },
       error: (err) => this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message })

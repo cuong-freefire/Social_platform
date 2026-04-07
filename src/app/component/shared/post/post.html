@@ -68,13 +68,14 @@
                     (click)="toggleComments()"
                 >
                     <span class="ml-1 sm:ml-2 font-medium">Bình luận</span>
+                    <span class="ml-1 sm:ml-2 font-medium">({{ post.commentCount ?? 0 }})</span>
                 </button>
             </div>
 
             <!-- Comments Section -->
             @if (showComments) {
                 <div class="comments-container mt-2 pt-3 border-top-1 border-surface-700">
-                    <app-comments [postId]="post._id" />
+                    <app-comments [postId]="post._id" (onCommentChange)="updateCommentCount($event)" />
                 </div>
             }
         </div>

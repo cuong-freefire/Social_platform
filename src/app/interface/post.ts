@@ -10,4 +10,5 @@ export interface Post {
     dislikes?:  User[];
     createdAt?: string;
     updatedAt?: string;
+    commentCount?: number;
 }
