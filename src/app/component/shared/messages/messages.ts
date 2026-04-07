@@ -15,10 +15,12 @@ import { DialogModule } from 'primeng/dialog';
 
 import { Router } from '@angular/router';
 
+import { SkeletonModule } from 'primeng/skeleton';
+
 @Component({
   selector: 'app-messages',
   standalone: true,
-  imports: [CommonModule, FormsModule, AvatarModule, ButtonModule, InputTextModule, TooltipModule, DialogModule, MultiSelectModule],
+  imports: [CommonModule, FormsModule, AvatarModule, ButtonModule, InputTextModule, TooltipModule, DialogModule, MultiSelectModule, SkeletonModule],
   templateUrl: './messages.html',
   styleUrl: './messages.css'
 })
@@ -30,6 +32,7 @@ export class MessagesWindow implements AfterViewChecked {
   @Input() editingMsg: Message | null = null;
   @Input() replyingTo: Message | null = null;
   @Input() isSending: boolean = false;
+  @Input() isLoading: boolean = false;
   
   @Output() newMessageChange = new EventEmitter<string>();
   @Output() onSend = new EventEmitter<FormData>();
@@ -114,7 +117,7 @@ export class MessagesWindow implements AfterViewChecked {
   }
 
   get conversationImage() {
-    if (this.selectedConversation?.isGroup) return this.selectedConversation.groupImage || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png';
+    if (this.selectedConversation?.isGroup) return this.selectedConversation.groupImage || 'https://primefaces.org/cdn/primeng/images/galleria/galleria10.jpg';
     return this.otherParticipant?.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png';
   }
 

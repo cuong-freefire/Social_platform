@@ -19,8 +19,36 @@
 
         <!-- Messages Area -->
         <div class="messages-area flex-grow-1 p-3 overflow-y-auto custom-scrollbar" #scrollMe>
-            <div class="flex flex-column gap-4">
-                @for (msg of messages; track msg._id) {
+            @if (isLoading) {
+                <div class="flex flex-column gap-4">
+                    <!-- Skeleton for other's message -->
+                    <div class="flex align-items-start gap-2">
+                        <p-skeleton shape="circle" size="3rem" styleClass="flex-shrink-0"></p-skeleton>
+                        <div class="flex flex-column gap-2">
+                            <p-skeleton width="100px" height="1rem"></p-skeleton>
+                            <p-skeleton width="200px" height="3rem" borderRadius="16px"></p-skeleton>
+                        </div>
+                    </div>
+                    <!-- Skeleton for my message -->
+                    <div class="flex flex-row-reverse align-items-start gap-2">
+                        <p-skeleton shape="circle" size="3rem" styleClass="flex-shrink-0"></p-skeleton>
+                        <div class="flex flex-column align-items-end gap-2">
+                            <p-skeleton width="80px" height="1rem"></p-skeleton>
+                            <p-skeleton width="150px" height="2.5rem" borderRadius="16px"></p-skeleton>
+                        </div>
+                    </div>
+                    <!-- More Skeletons -->
+                    <div class="flex align-items-start gap-2">
+                        <p-skeleton shape="circle" size="3rem" styleClass="flex-shrink-0"></p-skeleton>
+                        <div class="flex flex-column gap-2">
+                            <p-skeleton width="120px" height="1rem"></p-skeleton>
+                            <p-skeleton width="250px" height="4rem" borderRadius="16px"></p-skeleton>
+                        </div>
+                    </div>
+                </div>
+            } @else {
+                <div class="flex flex-column gap-4">
+                    @for (msg of messages; track msg._id) {
                     @if (msg.isSystem) {
                         <div class="system-message w-full flex justify-content-center my-2">
                             <span class="bg-surface-800 text-gray-400 text-xs px-3 py-1 border-round-2xl italic">

@@ -65,6 +65,7 @@ export class ChatPage implements OnInit, OnDestroy {
   editingMessage: Message | null = null;
   replyingToMessage: Message | null = null;
   isSendingMessage: boolean = false;
+  isLoadingMessages: boolean = false;
 
   ngOnInit(): void {
     this.checkMobile();
@@ -326,12 +327,20 @@ export class ChatPage implements OnInit, OnDestroy {
   }
 
   private loadMessages(conversationId: string) {
+    this.isLoadingMessages = true;
+    this.cdr.detectChanges();
+    
     this.chatApi.getMessageByConversation(conversationId).subscribe({
       next: (res) => {
         this.messages = [...res];
+        this.isLoadingMessages = false;
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Lỗi tải tin nhắn:', err)
+      error: (err) => {
+        console.error('Lỗi tải tin nhắn:', err);
+        this.isLoadingMessages = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
