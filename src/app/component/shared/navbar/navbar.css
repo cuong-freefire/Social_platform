@@ -70,6 +70,16 @@
     border: none;
     border-bottom: 1px solid var(--p-surface-700);
     background-color: var(--p-surface-950) !important;
+    color: var(--p-surface-0) !important;
+}
+
+/* Fix text color for menu items */
+::ng-deep .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-content .p-menuitem-link .p-menuitem-text {
+    color: var(--p-surface-0) !important;
+}
+
+::ng-deep .p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-content .p-menuitem-link .p-menuitem-icon {
+    color: var(--p-surface-0) !important;
 }
 
 /* Ẩn các thành phần không cần thiết trên mobile để tối ưu không gian */
@@ -79,14 +89,31 @@
     }
     
     ::ng-deep .p-menubar-button {
-        margin-left: auto;
+        order: 1; /* Menu hamburger ở đầu bên trái hoặc sau logo */
+        margin-left: 0.5rem;
+        background: transparent !important;
+        border: none !important;
     }
 
     ::ng-deep .p-menubar-end {
-        margin-left: 0.5rem;
+        order: 2; /* Avatar và thông báo ở cuối */
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    ::ng-deep .p-menubar-root-list {
+        background-color: var(--p-surface-900) !important;
+        border: 1px solid var(--p-surface-700) !important;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
     }
 
     .logo-text {
-        font-size: 1.5rem !important;
+        font-size: 1.25rem !important;
     }
 }

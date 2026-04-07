@@ -131,3 +131,47 @@
 .chat-input:focus {
     box-shadow: 0 0 0 2px var(--p-primary-500);
 }
+
+/* Responsive cho Mobile */
+@media screen and (max-width: 768px) {
+    .chat-header {
+        padding: 0.5rem 0.75rem !important;
+        padding-left: 3rem !important; /* Dành chỗ cho nút Back */
+    }
+
+    .chat-header .text-lg {
+        font-size: 1rem !important;
+    }
+
+    .message-bubble {
+        max-width: 90% !important;
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.9rem !important;
+    }
+
+    .bubble-container {
+        max-width: 85% !important;
+    }
+
+    .message-actions {
+        opacity: 1 !important;
+        visibility: visible !important;
+        position: static !important;
+        margin-top: 4px !important;
+        background-color: transparent !important;
+    }
+
+    .action-icon-btn {
+        width: 28px !important;
+        height: 28px !important;
+        color: var(--p-surface-400) !important;
+    }
+
+    .chat-input-area {
+        padding: 0.5rem !important;
+    }
+
+    ::ng-deep .chat-input-area .p-inputtext {
+        font-size: 0.9rem !important;
+    }
+}

@@ -52,11 +52,18 @@ export class ChatPage implements OnInit, OnDestroy {
   messages: Message[] = [];
   selectedConversation: Conversation | null = null;
   
+  // Mobile responsive state
+  showConversationList: boolean = true;
+  isMobile: boolean = false;
+  
   newMessage: string = '';
   editingMessage: Message | null = null;
   replyingToMessage: Message | null = null;
 
   ngOnInit(): void {
+    this.checkMobile();
+    window.addEventListener('resize', () => this.checkMobile());
+    
     this.userSub = this.currentUser$.subscribe(user => {
       this.currentUser = user;
     });
@@ -69,7 +76,9 @@ export class ChatPage implements OnInit, OnDestroy {
           take(1)
         ).subscribe(convs => {
           if (!this.selectedConversation && !this.route.snapshot.queryParams['receiverId']) {
-            this.selectConversation(convs[0]);
+            if (!this.isMobile) {
+              this.selectConversation(convs[0]);
+            }
           }
         });
       }
@@ -85,11 +94,22 @@ export class ChatPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.userSub?.unsubscribe();
+    window.removeEventListener('resize', () => this.checkMobile());
+  }
+
+  checkMobile() {
+    this.isMobile = window.innerWidth <= 768;
+    if (!this.isMobile) {
+      this.showConversationList = true;
+    }
   }
 
   selectConversation(conv: Conversation) {
+    if (this.isMobile) {
+      this.showConversationList = false;
+    }
+    
     if (!conv._id) {
-      // New conversation with a friend
       this.selectedConversation = conv;
       this.messages = [];
       this.cdr.detectChanges();
@@ -98,6 +118,11 @@ export class ChatPage implements OnInit, OnDestroy {
 
     this.selectedConversation = conv;
     this.loadMessages(conv._id);
+  }
+
+  backToList() {
+    this.showConversationList = true;
+    this.selectedConversation = null;
   }
 
   startOrOpenConversation(receiverId: string) {
@@ -124,7 +149,6 @@ export class ChatPage implements OnInit, OnDestroy {
   sendMessage(formData: FormData) {
     if (!this.selectedConversation || !this.currentUser) return;
 
-    // Nếu là cuộc hội thoại mới (chưa có _id)
     if (!this.selectedConversation._id) {
       const receiver = this.selectedConversation.participants[0];
       this.chatApi.getOrCreateConversation(receiver._id).subscribe({
@@ -203,8 +227,6 @@ export class ChatPage implements OnInit, OnDestroy {
       next: (updatedConv) => {
         this.selectedConversation = updatedConv;
         this.conversationState.addOrUpdateConversation(updatedConv);
-        
-        // Tải lại tin nhắn để hiển thị thông báo hệ thống
         this.loadMessages(updatedConv._id);
       },
       error: (err) => console.error('Lỗi xóa thành viên:', err)
@@ -217,8 +239,6 @@ export class ChatPage implements OnInit, OnDestroy {
       next: (updatedConv) => {
         this.selectedConversation = updatedConv;
         this.conversationState.addOrUpdateConversation(updatedConv);
-        
-        // Tải lại tin nhắn để hiển thị thông báo hệ thống
         this.loadMessages(updatedConv._id);
       },
       error: (err) => console.error('Lỗi thêm thành viên:', err)
@@ -229,16 +249,11 @@ export class ChatPage implements OnInit, OnDestroy {
     if (!this.selectedConversation) return;
     this.chatApi.leaveGroup(this.selectedConversation._id, data.newAdminId).subscribe({
       next: (res: any) => {
-        if (res.conversationId) {
-          // Trường hợp nhóm bị xóa (do người cuối cùng rời đi)
-          this.conversationState.loadConversations().subscribe();
-          this.selectedConversation = null;
-          this.messages = [];
-        } else {
-          // Trường hợp rời nhóm thành công nhưng nhóm vẫn còn người khác
-          this.conversationState.loadConversations().subscribe();
-          this.selectedConversation = null;
-          this.messages = [];
+        this.conversationState.loadConversations().subscribe();
+        this.selectedConversation = null;
+        this.messages = [];
+        if (this.isMobile) {
+          this.showConversationList = true;
         }
         this.cdr.detectChanges();
       },
@@ -263,6 +278,9 @@ export class ChatPage implements OnInit, OnDestroy {
         this.conversationState.loadConversations().subscribe();
         this.selectedConversation = null;
         this.messages = [];
+        if (this.isMobile) {
+          this.showConversationList = true;
+        }
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Lỗi giải tán nhóm:', err)

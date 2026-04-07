@@ -2,6 +2,30 @@
     margin-top: 4rem;
     height: calc(100vh - 4rem);
     overflow-y: auto;
+    background-color: var(--p-surface-950);
+}
+
+/* Tối ưu cho mobile */
+@media screen and (max-width: 768px) {
+    .friends-container {
+        padding: 1rem 0.5rem !important;
+    }
+
+    .friends-container > div {
+        border-radius: 0 !important;
+        border: none !important;
+        padding: 1rem !important;
+        box-shadow: none !important;
+    }
+
+    ::ng-deep .p-tabs .p-tablist .p-tablist-content {
+        justify-content: center;
+    }
+
+    ::ng-deep .p-tabs .p-tab {
+        font-size: 0.9rem;
+        padding: 1rem 0.5rem !important;
+    }
 }
 
 /* Custom scrollbar for friends */

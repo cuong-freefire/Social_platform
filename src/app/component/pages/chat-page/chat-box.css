@@ -29,3 +29,14 @@ app-messages {
     flex: 1;
     height: 100%;
 }
+
+@media screen and (max-width: 768px) {
+    app-conversations {
+        width: 100%;
+        border-right: none;
+    }
+
+    app-messages {
+        width: 100%;
+    }
+}
