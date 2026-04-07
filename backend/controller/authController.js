@@ -44,12 +44,12 @@ export const login = async (req, res) => {
         //Setup token vào cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: true,
-            sameSite: 'none',
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
             maxAge: 24 * 60 * 60 * 1000
         })
 
-        return res.status(200).json({ message: "Đăng nhập thành công" });
+        return res.status(200).json({ message: "Đăng nhập thành công", token, user: { id: user._id, username: user.username, name: user.name } });
     }
     catch (err) {
         res.status(500).json({ error: err.message });
@@ -59,8 +59,8 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
     res.clearCookie("token", {
         httpOnly: true,
-        secure: true,
-        sameSite: 'none',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         path: '/'
     });
     return res.status(200).json({ message: "Đăng xuất thành công" });
