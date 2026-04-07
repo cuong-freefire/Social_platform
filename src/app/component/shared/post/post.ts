@@ -54,7 +54,8 @@ export class Post implements OnInit {
   }
 
   get isOwner(): boolean {
-    return this.post.user?._id === this.user?._id;
+    if (!this.user || !this.post) return false;
+    return this.post.user?._id === this.user?._id || this.user.role === 'admin';
   }
 
   deletePost() {

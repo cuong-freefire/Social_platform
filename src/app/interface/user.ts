@@ -7,4 +7,5 @@ export interface User {
     friends?: User[];
     createdAt?: string;
     updatedAt?: string;
+    role?: 'user' | 'admin';
 }

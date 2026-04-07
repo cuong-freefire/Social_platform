@@ -18,6 +18,7 @@ export const verifyToken = (req, res, next) => {
             return res.status(403).json({ error: "Token ko hợp lệ" })
         }
         req.user = user.id;
+        req.role = user.role; // Lưu role vào request
         next();
     })
 }

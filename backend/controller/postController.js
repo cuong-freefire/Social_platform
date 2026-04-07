@@ -330,11 +330,13 @@ export const deletePost = async (req, res) => {
     try {
         const postId = req.params.id;
         const userId = req.user;
+        const userRole = req.role;
 
         const post = await Post.findById(postId);
         if (!post) return res.status(404).json({ error: "Bài viết không tồn tại!" });
 
-        if (post.user.toString() !== userId.toString()) {
+        // Admin có thể xoá mọi bài viết, User chỉ có thể xoá bài của chính mình
+        if (userRole !== 'admin' && post.user.toString() !== userId.toString()) {
             return res.status(403).json({ error: "Bạn không có quyền xoá bài viết này!" });
         }
 

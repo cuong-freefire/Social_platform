@@ -38,7 +38,7 @@ export const login = async (req, res) => {
         }
 
         //Tạo token
-        const token = jwt.sign({ id: user._id }, process.env.SECRET, { expiresIn: "1d" })
+        const token = jwt.sign({ id: user._id, role: user.role }, process.env.SECRET, { expiresIn: "1d" })
         // const { password, ...others } = user.toObject();
 
         //Setup token vào cookie
@@ -49,7 +49,16 @@ export const login = async (req, res) => {
             maxAge: 24 * 60 * 60 * 1000
         })
 
-        return res.status(200).json({ message: "Đăng nhập thành công", token, user: { id: user._id, username: user.username, name: user.name } });
+        return res.status(200).json({ 
+            message: "Đăng nhập thành công", 
+            token, 
+            user: { 
+                id: user._id, 
+                username: user.username, 
+                name: user.name,
+                role: user.role 
+            } 
+        });
     }
     catch (err) {
         res.status(500).json({ error: err.message });
