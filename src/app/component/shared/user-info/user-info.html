@@ -56,6 +56,8 @@
           label="Lưu thay đổi"
           styleClass="flex-1"
           (onClick)="onSubmit()"
+          [loading]="isLoading"
+          [disabled]="isLoading"
         />
       </div>
     </ng-template>

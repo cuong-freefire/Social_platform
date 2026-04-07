@@ -37,6 +37,7 @@ export class UserInfo implements OnInit {
   editedUser!: User;
   user!: User | null;
   selectedAvatarFile: File | null = null;
+  isLoading: boolean = false;
 
   ngOnInit(): void {
     this.user$.subscribe((user) => {
@@ -81,12 +82,17 @@ export class UserInfo implements OnInit {
     }
 
     if (hasChanges) {
+      this.isLoading = true;
       this.userInfoState.updateUser(formData).subscribe({
         next: (res) => {
           this.messageService.add({ severity: 'success', summary: 'Thông báo', detail: res.message });
+          this.isLoading = false;
+          this.cd.detectChanges();
         },
         error: (err) => {
           this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message });
+          this.isLoading = false;
+          this.cd.detectChanges();
         },
       });
     } else {

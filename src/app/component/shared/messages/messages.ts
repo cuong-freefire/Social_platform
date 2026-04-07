@@ -114,7 +114,7 @@ export class MessagesWindow implements AfterViewChecked {
   }
 
   get conversationImage() {
-    if (this.selectedConversation?.isGroup) return this.selectedConversation.groupImage || 'https://primefaces.org/cdn/primeng/images/demo/avatar/ionitcu.png';
+    if (this.selectedConversation?.isGroup) return this.selectedConversation.groupImage || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png';
     return this.otherParticipant?.image || 'https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png';
   }
 
