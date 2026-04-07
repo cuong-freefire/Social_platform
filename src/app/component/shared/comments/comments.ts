@@ -48,6 +48,8 @@ export class Comments implements AfterViewInit, OnInit {
   newCommentContent = '';
   replyingTo: string | null = null;
   replyContent = '';
+  isSubmitting = false; // Trạng thái đang gửi comment
+  isReplying = false;   // Trạng thái đang trả lời comment
 
   commentsSubject = new BehaviorSubject<Comment[]>([]);
   comment$ = this.commentsSubject.asObservable();
@@ -150,7 +152,9 @@ export class Comments implements AfterViewInit, OnInit {
 
   //5. Hàm tạo comment mới
   submitComment() {
-    if (!this.newCommentContent.trim()) return;
+    if (!this.newCommentContent.trim() || this.isSubmitting) return;
+    
+    this.isSubmitting = true;
     this.postApiService.createComment(this.postId, this.newCommentContent).subscribe({
       next: (comment) => {
         const currentFlat = this.getAllCommentsFlat(this.commentsSubject.value);
@@ -159,12 +163,18 @@ export class Comments implements AfterViewInit, OnInit {
         this.commentsSubject.next(this.buildCommentTree(updatedFlat));
         this.newCommentContent = '';
         this.onCommentChange.emit(1); // Increment count
+        this.isSubmitting = false;
         this.cdr.detectChanges();
         
         // Tự động cuộn xuống cuối sau khi bình luận
         setTimeout(() => {
           this.scrollToBottom();
         }, 100);
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message || 'Không thể gửi bình luận' });
+        this.cdr.detectChanges();
       }
     })
   }
@@ -177,7 +187,9 @@ export class Comments implements AfterViewInit, OnInit {
   
   //6. Hàm tạo comment khi trả lời 1 comment khác.
   submitReply(parentCommentId: string) {
-    if (!this.replyContent.trim()) return;
+    if (!this.replyContent.trim() || this.isReplying) return;
+
+    this.isReplying = true;
     this.postApiService.createComment(this.postId, this.replyContent, parentCommentId).subscribe({
       next: (reply) => {
         const currentFlat = this.getAllCommentsFlat(this.commentsSubject.value);
@@ -186,6 +198,12 @@ export class Comments implements AfterViewInit, OnInit {
         this.replyContent = '';
         this.replyingTo = null;
         this.onCommentChange.emit(1); // Increment count
+        this.isReplying = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isReplying = false;
+        this.messageService.add({ severity: 'error', summary: 'Lỗi', detail: err.message || 'Không thể trả lời bình luận' });
         this.cdr.detectChanges();
       }
     })

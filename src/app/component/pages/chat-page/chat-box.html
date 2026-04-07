@@ -19,6 +19,7 @@
             [newMessage]="newMessage"
             [editingMsg]="editingMessage"
             [replyingTo]="replyingToMessage"
+            [isSending]="isSendingMessage"
             (newMessageChange)="newMessage = $event"
             (onSend)="sendMessage($event)"
             (onEdit)="startEdit($event)"

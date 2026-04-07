@@ -59,6 +59,7 @@ export class ChatPage implements OnInit, OnDestroy {
   newMessage: string = '';
   editingMessage: Message | null = null;
   replyingToMessage: Message | null = null;
+  isSendingMessage: boolean = false;
 
   ngOnInit(): void {
     this.checkMobile();
@@ -147,8 +148,9 @@ export class ChatPage implements OnInit, OnDestroy {
   }
 
   sendMessage(formData: FormData) {
-    if (!this.selectedConversation || !this.currentUser) return;
+    if (!this.selectedConversation || !this.currentUser || this.isSendingMessage) return;
 
+    this.isSendingMessage = true;
     if (!this.selectedConversation._id) {
       const receiver = this.selectedConversation.participants[0];
       this.chatApi.getOrCreateConversation(receiver._id).subscribe({
@@ -157,6 +159,11 @@ export class ChatPage implements OnInit, OnDestroy {
           this.conversationState.addOrUpdateConversation(conv);
           formData.set('conversationId', conv._id);
           this.executeSendMessage(formData);
+        },
+        error: (err) => {
+          this.isSendingMessage = false;
+          console.error('Lỗi tạo cuộc trò chuyện:', err);
+          this.cdr.detectChanges();
         }
       });
     } else {
@@ -171,6 +178,12 @@ export class ChatPage implements OnInit, OnDestroy {
         next: (updatedMsg) => {
           this.messages = this.messages.map(m => m._id === updatedMsg._id ? updatedMsg : m);
           this.resetInput();
+          this.isSendingMessage = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.isSendingMessage = false;
+          console.error('Lỗi sửa tin nhắn:', err);
           this.cdr.detectChanges();
         }
       });
@@ -180,6 +193,12 @@ export class ChatPage implements OnInit, OnDestroy {
           this.messages = [...this.messages, msg];
           this.resetInput();
           this.conversationState.updateLastMessage(this.selectedConversation!._id, msg);
+          this.isSendingMessage = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.isSendingMessage = false;
+          console.error('Lỗi gửi tin nhắn:', err);
           this.cdr.detectChanges();
         }
       });

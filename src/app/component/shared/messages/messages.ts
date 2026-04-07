@@ -29,6 +29,7 @@ export class MessagesWindow implements AfterViewChecked {
   @Input() newMessage: string = '';
   @Input() editingMsg: Message | null = null;
   @Input() replyingTo: Message | null = null;
+  @Input() isSending: boolean = false;
   
   @Output() newMessageChange = new EventEmitter<string>();
   @Output() onSend = new EventEmitter<FormData>();

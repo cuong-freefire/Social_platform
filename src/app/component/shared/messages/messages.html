@@ -137,8 +137,13 @@
                 <button pButton icon="pi pi-image" class="p-button-rounded p-button-text" (click)="triggerFileInput()"></button>
                 <input type="text" pInputText [ngModel]="newMessage" (ngModelChange)="newMessageChange.emit($event)"
                        placeholder="Nhập tin nhắn..." class="flex-grow-1 border-round-3xl bg-surface-800 border-none px-4 py-2 text-white chat-input"
+                       [disabled]="isSending"
                        (keyup.enter)="handleSend()"/>
-                <button pButton icon="pi pi-send" class="p-button-rounded" [disabled]="!newMessage?.trim() && !selectedFile" (click)="handleSend()"></button>
+                <button pButton 
+                        [icon]="isSending ? 'pi pi-spin pi-spinner' : 'pi pi-send'" 
+                        class="p-button-rounded" 
+                        [disabled]="(!newMessage?.trim() && !selectedFile) || isSending" 
+                        (click)="handleSend()"></button>
             </div>
         </div>
     } @else {
